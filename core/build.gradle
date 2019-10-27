@@ -1,0 +1,7 @@
+dependencies {
+    compileOnly asm
+    compileOnly asm_commons
+    compileOnly log4j_api
+    compileOnly project(':launcher')
+    implementation project(':api')
+}

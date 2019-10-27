@@ -4,15 +4,14 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.objectweb.asm.ClassWriter;
-
-import static org.objectweb.asm.Opcodes.*;
-
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import ru.xdark.modloader.EventExecutor;
 import ru.xdark.modloader.util.JavaUtil;
 
 import java.lang.reflect.Method;
+
+import static org.objectweb.asm.Opcodes.*;
 
 @UtilityClass
 final class ASMEventExecutor {
@@ -30,7 +29,7 @@ final class ASMEventExecutor {
         val eventInternal = Type.getInternalName(event);
         val methodName = method.getName();
         val executorName = "ru/xdark/modloader/event/EventExecutor$$" + owner.getName().replace('.', '$') + "__" + methodName;
-        writer.visit(V1_8, ACC_FINAL, executorName, null, BRIDGE_INTERNAL, new String[]{"ru/xdark/modloader/event/EventExecutor"});
+        writer.visit(JavaUtil.vmVersion() + 44, ACC_FINAL, executorName, null, BRIDGE_INTERNAL, new String[]{"ru/xdark/modloader/event/EventExecutor"});
         writer.visitField(ACC_PRIVATE | ACC_FINAL, "handle", 'L' + ownerInternal + ';', null, null);
         MethodVisitor mv = writer.visitMethod(ACC_PUBLIC, "<init>", "(L" + ownerInternal + ";)V", null, null);
         mv.visitCode();
@@ -59,7 +58,6 @@ final class ASMEventExecutor {
         constructor.setAccessible(true);
         return (EventExecutor<?>) constructor.newInstance(listener);
     }
-
 
     private Class<?> createMagicBridge() {
         val writer = new ClassWriter(0);

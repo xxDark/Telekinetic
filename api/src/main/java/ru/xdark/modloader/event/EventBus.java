@@ -7,7 +7,7 @@ import java.util.concurrent.Executor;
 
 public interface EventBus {
 
-    void registerListeners(Object mod);
+    RegisteredListener registerListeners(Object mod);
 
     <T extends Event> RegisteredListener registerListener(Object mod, Class<T> eventClass, EventExecutor<T> executor, int priority);
 

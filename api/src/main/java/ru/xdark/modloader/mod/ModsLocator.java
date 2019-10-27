@@ -1,4 +1,4 @@
-package ru.xdark.modloader.loader;
+package ru.xdark.modloader.mod;
 
 import ru.xdark.launcher.Launcher;
 import ru.xdark.launcher.LauncherClassLoader;

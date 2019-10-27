@@ -1,4 +1,6 @@
 rootProject.name = 'modloader'
-include 'api'
-include 'launcher'
-
+include(
+        'api',
+        'core',
+        'launcher'
+)
