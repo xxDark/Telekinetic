@@ -11,4 +11,6 @@ public interface DependenciesInjector {
     <V> Injector<V> getInjector(Class<V> type);
 
     int inject(Object o);
+
+    DependenciesInjector toImmutable();
 }
