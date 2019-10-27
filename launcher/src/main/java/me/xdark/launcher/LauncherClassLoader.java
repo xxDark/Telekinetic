@@ -13,14 +13,14 @@ import java.security.CodeSource;
 @Log4j2
 public final class LauncherClassLoader extends URLClassLoader {
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
-    private final Launcher handle;
+    private final Launcher launcher;
     private final ClassLoader parent;
 
-    LauncherClassLoader(Launcher handle, URL[] urls, ClassLoader parent) {
+    LauncherClassLoader(Launcher launcher, URL[] urls, ClassLoader parent) {
         super(urls, null);
         this.parent = parent;
-        this.handle = handle;
-        initialize(handle);
+        this.launcher = launcher;
+        initialize(launcher);
     }
 
     private static void initialize(Launcher launcher) {
@@ -41,7 +41,7 @@ public final class LauncherClassLoader extends URLClassLoader {
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        val handle = this.handle;
+        val handle = this.launcher;
         if (handle.isClassLoadingExclusion(name)) {
             return parent.loadClass(name);
         }

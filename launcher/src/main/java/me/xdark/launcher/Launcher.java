@@ -6,13 +6,19 @@ public interface Launcher {
 
     void addClassLoadingExclusions(String... exclusions);
 
+    void addClassLoadingExclusion(String exclusion);
+
     void addTransformerExclusions(String... exclusions);
+
+    void addTransformerExclusion(String exclusion);
 
     void registerTransformer(ClassFileTransformer transformer);
 
     void registerTweaker(Tweaker tweaker);
 
     void setLaunchTarget(String target);
+
+    String getLaunchTarget();
 
     ClassTransformation runTransformation(ClassTransformation transformation);
 
@@ -27,4 +33,6 @@ public interface Launcher {
     Set<LauncherOption> getLauncherOptions();
 
     boolean isOptionSet(LauncherOption option);
+
+    default void gotoPhase(LaunchPhase phase) { }
 }

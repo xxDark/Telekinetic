@@ -1,5 +1,6 @@
 package me.xdark.launcher;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
@@ -19,7 +20,7 @@ public abstract class ApplicationLauncher implements Launcher {
     private final List<Tweaker> tweakers = new ArrayList<>(8);
     private final List<ClassFileTransformer> transformers = new ArrayList<>(8);
     private final List<ClassNameTransformer> nameTransformers = new ArrayList<>(4);
-    private String launchTarget;
+    @Getter private String launchTarget;
 
     @Override
     public void addClassLoadingExclusions(String... exclusions) {
@@ -28,9 +29,21 @@ public abstract class ApplicationLauncher implements Launcher {
     }
 
     @Override
+    public void addClassLoadingExclusion(String exclusion) {
+        this.classLoadingExclusions.add(exclusion);
+        log.debug("Added classloading exclusion: {}", exclusion);
+    }
+
+    @Override
     public void addTransformerExclusions(String... exclusions) {
         Collections.addAll(this.transformationExclusions, exclusions);
         log.debug("Added transformation exclusions: {}", Arrays.toString(exclusions));
+    }
+
+    @Override
+    public void addTransformerExclusion(String exclusion) {
+        this.transformationExclusions.add(exclusion);
+        log.debug("Added transformation exclusion: {}", exclusion);
     }
 
     @Override

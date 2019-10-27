@@ -1,4 +1,5 @@
 dependencies {
     compileOnly guava
     compileOnly log4j_api
+    compileOnly joptsimple
 }
