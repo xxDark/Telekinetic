@@ -1,5 +1,6 @@
 package me.xdark.launcher;
 
+import java.util.List;
 import java.util.Set;
 
 public interface Launcher {
@@ -15,6 +16,8 @@ public interface Launcher {
     void registerTransformer(ClassFileTransformer transformer);
 
     void registerTweaker(Tweaker tweaker);
+
+    void injectTweakers(LauncherInitializationContext context);
 
     void setLaunchTarget(String target);
 

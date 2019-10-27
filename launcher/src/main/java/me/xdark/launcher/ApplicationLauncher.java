@@ -67,6 +67,15 @@ public abstract class ApplicationLauncher implements Launcher {
     }
 
     @Override
+    public void injectTweakers(LauncherInitializationContext context) {
+        Objects.requireNonNull(context, "context");
+        this.tweakers.forEach(tweaker -> {
+            log.info("Calling tweaker {}", tweaker.getClass().getName());
+            tweaker.inject(context);
+        });
+    }
+
+    @Override
     public void setLaunchTarget(String target) {
         log.debug("Trying to set launchTarget to: {}", target);
         if (this.launchTarget != null && !isOptionSet(LauncherOption.LAUNCH_TARGET_REDEFINITION)) {

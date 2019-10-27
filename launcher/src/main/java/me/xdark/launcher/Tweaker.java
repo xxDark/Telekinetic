@@ -4,11 +4,9 @@ import java.util.List;
 
 public interface Tweaker extends Comparable<Tweaker> {
 
-    void prepare(LauncherInitializationContext context);
+    void inject(LauncherInitializationContext context);
 
     void injectArguments(List<String> arguments);
-
-    void injectIntoLauncher(Launcher launcher);
 
     int getTweakOrder();
 
