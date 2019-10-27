@@ -11,6 +11,8 @@ subprojects {
     dependencies {
         compileOnly 'org.projectlombok:lombok:1.18.8'
         annotationProcessor 'org.projectlombok:lombok:1.18.8'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+        testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
     }
 
     tasks.withType(JavaCompile) {
@@ -18,6 +20,10 @@ subprojects {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
         options.incremental = true
+    }
+
+    test {
+        useJUnitPlatform()
     }
 
     project.ext {

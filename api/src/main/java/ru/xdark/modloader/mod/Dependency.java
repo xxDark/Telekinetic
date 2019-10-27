@@ -7,17 +7,11 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Mod {
-
-    String name();
+public @interface Dependency {
 
     String id();
 
+    boolean optional() default false;
+
     String version();
-
-    String url() default "";
-
-    String[] authors() default {};
-
-    Dependency[] dependencies() default {};
 }
