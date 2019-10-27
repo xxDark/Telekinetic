@@ -2,5 +2,9 @@ rootProject.name = 'modloader'
 include(
         'api',
         'core',
-        'launcher'
+        'launcher',
+        'minecraft',
+        'minecraft:client',
+        'minecraft:server'
 )
+
