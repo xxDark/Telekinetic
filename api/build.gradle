@@ -1,0 +1,7 @@
+version '1.0-BETA'
+
+dependencies {
+    compileOnly asm
+    compileOnly asm_commons
+    compileOnly log4j_api
+}
