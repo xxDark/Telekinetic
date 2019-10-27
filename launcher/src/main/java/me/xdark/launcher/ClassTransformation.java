@@ -1,10 +1,18 @@
 package me.xdark.launcher;
 
-public interface ClassTransformation {
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-    String getClassName();
+@AllArgsConstructor
+@Data
+public final class ClassTransformation {
 
-    byte[] getClassBytes();
+    private final String originalClassName;
+    private final String transformedClassName;
+    private final String untransformedClassName;
+    private byte[] classBytes;
 
-    void setTransformationResult(byte[] transformationResult);
+    public void setTransformationResult(byte[] transformationResult) {
+        this.classBytes = transformationResult;
+    }
 }

@@ -1,5 +1,7 @@
 package me.xdark.launcher;
 
+import java.util.Set;
+
 public interface Launcher {
 
     void addClassLoadingExclusions(String... exclusions);
@@ -14,7 +16,15 @@ public interface Launcher {
 
     ClassTransformation runTransformation(ClassTransformation transformation);
 
+    String transformClassName(String className);
+
+    String untransformClassName(String className);
+
     boolean isClassLoadingExclusion(String className);
 
     boolean isTransformationExclusion(String className);
+
+    Set<LauncherOption> getLauncherOptions();
+
+    boolean isOptionSet(LauncherOption option);
 }
