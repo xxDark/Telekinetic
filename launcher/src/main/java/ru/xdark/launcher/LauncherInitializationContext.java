@@ -1,4 +1,4 @@
-package me.xdark.launcher;
+package ru.xdark.launcher;
 
 import lombok.AccessLevel;
 import lombok.Data;

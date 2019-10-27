@@ -1,4 +1,4 @@
-package me.xdark.launcher;
+package ru.xdark.launcher;
 
 import com.google.common.collect.Lists;
 import joptsimple.OptionParser;

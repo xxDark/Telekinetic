@@ -1,4 +1,4 @@
-package me.xdark.launcher;
+package ru.xdark.launcher;
 
 import lombok.extern.log4j.Log4j2;
 import lombok.val;

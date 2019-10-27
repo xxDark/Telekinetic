@@ -2,9 +2,8 @@ package ru.xdark.modloader.loader;
 
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
-import me.xdark.launcher.Launcher;
-import me.xdark.launcher.LauncherClassLoader;
-import ru.xdark.modloader.loader.ModsLocator;
+import ru.xdark.launcher.Launcher;
+import ru.xdark.launcher.LauncherClassLoader;
 import ru.xdark.modloader.mod.Mod;
 import ru.xdark.modloader.mod.ModContainer;
 import ru.xdark.modloader.util.JavaUtil;
@@ -24,7 +23,7 @@ public final class ClassPathModsLocator implements ModsLocator {
     public Collection<ModContainer> findContainers(Launcher launcher, LauncherClassLoader classLoader) {
         val classPath = System.getProperty("java.class.path").split(JavaUtil.cpSeparator());
         log.debug("Java ClassPath ({})", Arrays.toString(classPath));
-        val toLoad = new HashMap<String, Mod>();
+        val toLoad = new HashMap<Class<?>, Mod>();
         for (val entry : classPath) {
             log.debug("Scanning classpath entry: {}", entry);
             try (val jar = new JarFile(entry, true)) {
@@ -44,7 +43,19 @@ public final class ClassPathModsLocator implements ModsLocator {
                     continue;
                 }
                 log.info("Discovered mod: {}", className);
-
+                // Load class (this will NOT trigger static initializer)
+                Class<?> modClass;
+                try {
+                    modClass = Class.forName(className.replace('/', '.'), false, classLoader);
+                } catch (ClassNotFoundException ex) {
+                    throw new IllegalStateException("Mod class is missing: " + className);
+                }
+                val modAnnotation = modClass.getAnnotation(Mod.class);
+                if (modAnnotation == null) {
+                    log.error("Mod {} is missing @Mod annotation!", modClass);
+                    continue;
+                }
+                toLoad.put(modClass, modAnnotation);
             } catch (IOException ex) {
                 log.error("Error scanning classpath entry:", ex);
             }

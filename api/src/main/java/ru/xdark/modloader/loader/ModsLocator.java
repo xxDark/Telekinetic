@@ -1,7 +1,7 @@
 package ru.xdark.modloader.loader;
 
-import me.xdark.launcher.Launcher;
-import me.xdark.launcher.LauncherClassLoader;
+import ru.xdark.launcher.Launcher;
+import ru.xdark.launcher.LauncherClassLoader;
 import ru.xdark.modloader.mod.ModContainer;
 
 import java.util.Collection;

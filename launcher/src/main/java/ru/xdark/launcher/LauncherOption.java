@@ -1,4 +1,4 @@
-package me.xdark.launcher;
+package ru.xdark.launcher;
 
 public enum LauncherOption {
     MULTIPLE_NAE_TRANSFORMERS,

@@ -1,4 +1,4 @@
-package me.xdark.launcher;
+package ru.xdark.launcher;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
