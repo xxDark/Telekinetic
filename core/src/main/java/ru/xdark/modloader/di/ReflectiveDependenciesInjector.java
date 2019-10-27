@@ -4,9 +4,22 @@ import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
 import java.lang.reflect.Modifier;
+import java.util.Map;
 
 @Log4j2
 public final class ReflectiveDependenciesInjector extends DefaultAbstractDependenciesInjector {
+
+    public ReflectiveDependenciesInjector(Map<Class<?>, Injector<?>> injectorsMap) {
+        super(injectorsMap);
+    }
+
+    public ReflectiveDependenciesInjector(DependenciesInjector injector) {
+        super(injector);
+    }
+
+    public ReflectiveDependenciesInjector() {
+        super();
+    }
 
     @Override
     public int inject(Object o) {
