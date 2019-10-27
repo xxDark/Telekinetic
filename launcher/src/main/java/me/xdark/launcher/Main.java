@@ -29,8 +29,7 @@ public class Main {
         val ourLoader = Main.class.getClassLoader();
         Launcher launcher;
         try {
-            Constructor<LauncherBootstrapper> constructor = (Constructor<LauncherBootstrapper>) ourLoader.loadClass(bootstrapperClass)
-                    .getDeclaredConstructor();
+            val constructor = (Constructor<LauncherBootstrapper>) ourLoader.loadClass(bootstrapperClass).getDeclaredConstructor();
             constructor.setAccessible(true);
             launcher = constructor.newInstance().create();
         } catch (Exception ex) {
@@ -46,8 +45,7 @@ public class Main {
             log.debug("Injecting tweakers: {}", tweakers);
             for (val className : tweakers) {
                 launcher.addClassLoadingExclusions(className.substring(0, className.lastIndexOf('.')));
-                Constructor<Tweaker> constructor = (Constructor<Tweaker>) classLoader.loadClass(className)
-                        .getDeclaredConstructor();
+                val constructor = (Constructor<Tweaker>) classLoader.loadClass(className).getDeclaredConstructor();
                 constructor.setAccessible(true);
                 val tweaker = constructor.newInstance();
                 launcher.registerTweaker(tweaker);
@@ -59,7 +57,7 @@ public class Main {
             Objects.requireNonNull(target, "launchTarget");
             val launchClass = classLoader.loadClass(target);
             val method = launchClass.getMethod("main", String[].class);
-            log.debug("gotoPhase(COMPLETE)");
+            log.debug("gotoPhase(START)");
             launcher.gotoPhase(LaunchPhase.START);
             method.invoke(null, new Object[]{args});
         } catch (Exception ex) {
