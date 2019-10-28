@@ -17,7 +17,7 @@ public final class TelekineticModLoader implements ModLoader {
 
     @Override
     public void inject(Launcher launcher) {
-        launcher.registerTweaker(new ModloaderTweaker(this));
+        launcher.registerTweaker(new ModLoaderTweaker(this));
     }
 
     @Override

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 @Log4j2
 @RequiredArgsConstructor
-final class ModloaderTweaker implements Tweaker {
+final class ModLoaderTweaker implements Tweaker {
 
     private final ModLoader modLoader;
 
