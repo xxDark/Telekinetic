@@ -17,12 +17,12 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 final class ModloaderTweaker implements Tweaker {
 
-    private final ModLoader modloader;
+    private final ModLoader modLoader;
 
     @Override
     public void inject(LauncherInitializationContext context) {
         log.info("Modloader injection");
-        val modLoader = this.modloader;
+        val modLoader = this.modLoader;
         val mods = new ArrayList<ModContainer>();
         val primaryContainer = new ModLoaderContainer(modLoader);
         mods.add(primaryContainer);

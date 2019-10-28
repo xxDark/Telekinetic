@@ -11,5 +11,5 @@ import ru.xdark.telekenetic.ModLoader;
 public final class ModsLocateContext {
     private final Launcher launcher;
     private final LauncherClassLoader classLoader;
-    private final ModLoader modloader;
+    private final ModLoader modLoader;
 }
