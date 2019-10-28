@@ -1,5 +1,6 @@
 package ru.xdark.modloader;
 
+import lombok.val;
 import ru.xdark.launcher.Launcher;
 import ru.xdark.modloader.di.DependenciesInjector;
 import ru.xdark.modloader.environment.ModsEnvironment;
@@ -31,7 +32,14 @@ public final class Modloader implements ResourcesContainer {
     }
 
     public void setup(EnvironmentContext context) {
-        environment = new DefaultModsEnvironment(context);
+        val environment = this.environment = new DefaultModsEnvironment(context);
+        val bus = environment.getEventBus();
+        val injector = environment.getDependenciesInjector();
+        for (val mod : environment.getLoadedMods()) {
+            val instance = mod.getInstance();
+            bus.registerListeners(instance);
+            injector.inject(injector);
+        }
     }
 
     public ModsEnvironment environment() {
