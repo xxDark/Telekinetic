@@ -1,4 +1,4 @@
-package ru.xdark.modloader.envinornment;
+package ru.xdark.modloader.environment;
 
 import ru.xdark.modloader.di.DependenciesInjector;
 import ru.xdark.modloader.event.EventBus;

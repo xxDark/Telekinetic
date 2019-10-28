@@ -1,12 +1,6 @@
-version '1.1'
-
 dependencies {
     compileOnly asm
     compileOnly asm_commons
     compileOnly log4j_api
     compileOnly project(':launcher')
-
-    // For testing
-    testImplementation asm
-    testImplementation asm_commons
 }

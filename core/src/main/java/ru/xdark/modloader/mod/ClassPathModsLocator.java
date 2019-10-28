@@ -102,9 +102,9 @@ public final class ClassPathModsLocator implements ModsLocator {
             loadMod(containers, mods, mod);
         }
         mods.remove(annotation.id());
-        containers.add(new ModContainer(
-                loading.modClass.newInstance(),
-                annotation
+        containers.add(new LoadedModContainer(
+                ModDescription.fromAnnotation(annotation),
+                loading.modClass.newInstance()
         ));
     }
 

@@ -1,5 +1,6 @@
 package ru.xdark.modloader;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import ru.xdark.launcher.LauncherInitializationContext;
@@ -12,12 +13,17 @@ import ru.xdark.modloader.mod.ModsLocator;
 import java.util.ArrayList;
 
 @Log4j2
+@RequiredArgsConstructor
 final class ModloaderTweaker implements Tweaker {
+
+    private final Modloader modloader;
 
     @Override
     public void inject(LauncherInitializationContext context) {
         log.info("Modloader injection");
+        val modloader = this.modloader;
         val mods = new ArrayList<ModContainer>();
+        mods.add(new ModloaderContainer(modloader));
         val locators = new ModsLocator[]{
                 new ClassPathModsLocator()
         };
@@ -27,7 +33,7 @@ final class ModloaderTweaker implements Tweaker {
         log.info("Found {} total mods", mods.size());
         val envCtx = new EnvironmentContext(classLoader, context.getGameDirectory(), mods);
         log.info("Bootstrapping Modloader");
-        Modloader.setup(envCtx);
+        modloader.setup(envCtx);
     }
 
     @Override

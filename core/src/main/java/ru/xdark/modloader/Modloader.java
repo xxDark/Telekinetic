@@ -1,25 +1,33 @@
 package ru.xdark.modloader;
 
-import lombok.experimental.UtilityClass;
 import ru.xdark.launcher.Launcher;
 import ru.xdark.modloader.di.DependenciesInjector;
-import ru.xdark.modloader.envinornment.ModsEnvironment;
+import ru.xdark.modloader.environment.ModsEnvironment;
 import ru.xdark.modloader.environment.DefaultModsEnvironment;
 import ru.xdark.modloader.environment.EnvironmentContext;
 import ru.xdark.modloader.event.EventBus;
+import ru.xdark.modloader.mod.Mod;
 import ru.xdark.modloader.mod.ModContainer;
+import ru.xdark.modloader.resources.Resource;
 import ru.xdark.modloader.resources.ResourceManager;
+import ru.xdark.modloader.resources.ResourcesContainer;
 
 import java.nio.file.Path;
 import java.util.List;
 
-@UtilityClass
-public class Modloader {
+@Mod(
+        name = "Modloader",
+        id = "modloader",
+        version = "1.0-BETA",
+        authors = "__xDark"
+)
+public final class Modloader implements ResourcesContainer {
 
+    private static final Modloader instance = new Modloader();
     private ModsEnvironment environment;
 
     public void inject(Launcher launcher) {
-        launcher.registerTweaker(new ModloaderTweaker());
+        launcher.registerTweaker(new ModloaderTweaker(this));
     }
 
     public void setup(EnvironmentContext context) {
@@ -27,7 +35,7 @@ public class Modloader {
     }
 
     public ModsEnvironment environment() {
-        return Modloader.environment;
+        return environment;
     }
 
     public Path workingDirectory() {
@@ -52,5 +60,19 @@ public class Modloader {
 
     public List<ModContainer> loadedMods() {
         return environment.getLoadedMods();
+    }
+
+    public static Modloader instance() {
+        return instance;
+    }
+
+    @Override
+    public List<Resource> findResources(String path) {
+        return resourceManager().findResources(path);
+    }
+
+    @Override
+    public boolean hasResource(String path) {
+        return resourceManager().hasResource(path);
     }
 }

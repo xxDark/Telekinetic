@@ -11,7 +11,7 @@ public final class ClientLauncherBootstrapper implements LauncherBootstrapper {
     public Launcher create() {
         val launcher = new ClientApplicationLauncher();
         launcher.setLaunchTarget("net.minecraft.client.main.Main");
-        Modloader.inject(launcher);
+        Modloader.instance().inject(launcher);
         return launcher;
     }
 }

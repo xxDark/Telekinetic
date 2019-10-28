@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.val;
 import ru.xdark.modloader.di.DependenciesInjector;
 import ru.xdark.modloader.di.ReflectiveDependenciesInjector;
-import ru.xdark.modloader.envinornment.ModsEnvironment;
 import ru.xdark.modloader.event.EventBus;
 import ru.xdark.modloader.event.SimpleEventBus;
 import ru.xdark.modloader.mod.ModContainer;

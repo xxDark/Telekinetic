@@ -11,7 +11,7 @@ public final class ServerLauncherBootstrapper implements LauncherBootstrapper {
     public Launcher create() {
         val launcher = new ServerApplicationLauncher();
         launcher.setLaunchTarget("net.minecraft.server.MinecraftServer");
-        Modloader.inject(launcher);
+        Modloader.instance().inject(launcher);
         return launcher;
     }
 }
