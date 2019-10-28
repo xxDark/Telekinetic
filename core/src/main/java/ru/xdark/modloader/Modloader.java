@@ -12,6 +12,7 @@ import ru.xdark.modloader.mod.ModContainer;
 import ru.xdark.modloader.resources.Resource;
 import ru.xdark.modloader.resources.ResourceManager;
 import ru.xdark.modloader.resources.ResourcesContainer;
+import ru.xdark.modloader.version.Version;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -19,12 +20,14 @@ import java.util.List;
 @Mod(
         name = "Modloader",
         id = "modloader",
-        version = "1.0-BETA",
-        authors = "__xDark"
+        version = Modloader.RAW_VERSION,
+        authors= "__xDark"
 )
 public final class Modloader implements ResourcesContainer {
 
+    static final String RAW_VERSION = "1.1-BETA";
     private static final Modloader instance = new Modloader();
+    private final Version version = Version.parse(RAW_VERSION);
     private ModsEnvironment environment;
 
     public void inject(Launcher launcher) {
@@ -68,6 +71,10 @@ public final class Modloader implements ResourcesContainer {
 
     public List<ModContainer> loadedMods() {
         return environment.getLoadedMods();
+    }
+
+    public Version version() {
+        return version;
     }
 
     public static Modloader instance() {

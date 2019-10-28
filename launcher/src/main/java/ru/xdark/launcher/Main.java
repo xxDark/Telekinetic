@@ -10,8 +10,10 @@ import java.lang.reflect.Constructor;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 
 @Log4j2
@@ -25,7 +27,7 @@ public class Main {
                 .required();
         val tweakersOptions = parser.accepts("tweakClasses", "Launcher's tweak class(es)")
                 .withRequiredArg();
-        val gameDirectoryOption = parser.accepts("gameDir", "Game's launch directory")
+        val gameDirectoryOption = parser.acceptsAll(Arrays.asList("gameDir", "workingDir"), "Game's launch directory")
                 .withRequiredArg()
                 .withValuesConvertedBy(new PathValueConverter());
         val assetsDirectoryOption = parser.accepts("assetsDir", "Game's assets directory")
@@ -38,8 +40,10 @@ public class Main {
                 .withRequiredArg()
                 .withValuesConvertedBy(new PathValueConverter());
         val versionOption = parser.accepts("version", "Game's version").withRequiredArg();
-
+        val nonOptions = parser.nonOptions();
         parser.allowsUnrecognizedOptions();
+        parser.acceptsAll(Arrays.asList("h", "help"), "Prints help").forHelp();
+
         val options = parser.parse(args);
         String bootstrapperClass = options.valueOf(bootstrapperOption);
         log.debug("Bootstrap class: {}", bootstrapperClass);
@@ -59,6 +63,7 @@ public class Main {
             launcher.inject(classLoader);
             log.debug("gotoPhase(PRE_INITIALIZATION)");
             launcher.gotoPhase(LaunchPhase.PRE_INITIALIZATION);
+
             // TODO remove me?
             val libsDir = options.valuesOf(librariesOption);
             log.debug("Libraries directories: {}", libsDir);
@@ -79,7 +84,8 @@ public class Main {
                     launcher.appendDirectoryToNativePath(dir);
                 }
             }
-            ///
+            //
+
             val tweakers = options.valuesOf(tweakersOptions);
             log.debug("Injecting tweakers: {}", tweakers);
             for (val className : tweakers) {
@@ -91,15 +97,24 @@ public class Main {
             }
             log.debug("gotoPhase(INITIALIZATION)");
             launcher.gotoPhase(LaunchPhase.INITIALIZATION);
+            val workingDir = options.valueOf(gameDirectoryOption);
+            Path assetsDir = options.valueOf(assetsDirectoryOption);
+            if (assetsDir == null) {
+                assetsDir = workingDir.resolve("assets");
+            }
 
-            val arguments = new ArrayList<>(Arrays.asList(args));
+            // TODO maybe change this: manually inject some options
+            val version = options.valueOf(versionOption);
+            val arguments = new ArrayList<>(options.valuesOf(nonOptions));
+            Collections.addAll(arguments, "--version", version, "--assetsDir", assetsDir.normalize().toString());
+
             val context = new LauncherInitializationContext(
                     launcher,
                     classLoader,
                     arguments,
-                    options.valueOf(gameDirectoryOption),
-                    options.valueOf(assetsDirectoryOption),
-                    options.valueOf(versionOption)
+                    workingDir,
+                    assetsDir,
+                    version
             );
             launcher.injectTweakers(context);
             val target = launcher.getLaunchTarget();

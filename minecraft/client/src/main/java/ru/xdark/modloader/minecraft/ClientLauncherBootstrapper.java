@@ -4,6 +4,7 @@ import lombok.val;
 import ru.xdark.launcher.Launcher;
 import ru.xdark.launcher.LauncherBootstrapper;
 import ru.xdark.modloader.Modloader;
+import ru.xdark.modloader.minecraft.tweakers.ClientTweaker;
 
 public final class ClientLauncherBootstrapper implements LauncherBootstrapper {
 
@@ -11,7 +12,9 @@ public final class ClientLauncherBootstrapper implements LauncherBootstrapper {
     public Launcher create() {
         val launcher = new ClientApplicationLauncher();
         launcher.setLaunchTarget("net.minecraft.client.main.Main");
-        Modloader.instance().inject(launcher);
+        val loader = Modloader.instance();
+        loader.inject(launcher);
+        launcher.registerTweaker(new ClientTweaker());
         return launcher;
     }
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -18,7 +19,7 @@ public final class Version implements Comparable<Version> {
 
     public static Version parse(String input) {
         val index = input.indexOf('-');
-        val versionType = (index == -1) ? VersionType.RELEASE : VersionType.getByName(input.substring(index));
+        val versionType = (index == -1) ? VersionType.RELEASE : VersionType.getByName(input.substring(index + 1));
         val parts = (index == -1) ? input.split("\\.") : (input.substring(0, index).split("\\."));
         int length = parts.length;
         val digits = new int[length];

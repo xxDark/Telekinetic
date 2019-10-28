@@ -8,6 +8,7 @@ import ru.xdark.modloader.event.EventBus;
 import ru.xdark.modloader.event.SimpleEventBus;
 import ru.xdark.modloader.mod.ModContainer;
 import ru.xdark.modloader.resources.ResourceManager;
+import ru.xdark.modloader.version.Version;
 
 import java.nio.file.Path;
 import java.util.Collections;

@@ -8,12 +8,18 @@ public class VersionTest {
 
     @Test
     public void testParsing() {
-        val first = Version.parse("1.0.1.5");
-        assertEquals(1, first.getMajorVersion());
-        assertEquals(0, first.getMinorVersion());
-        assertEquals(1, first.getBuildVersion());
-        assertEquals(5, first.getPatchVersion());
-        assertEquals(Version.VersionType.RELEASE, first.getType());
+        val version = Version.parse("1.0.1.5");
+        assertEquals(1, version.getMajorVersion());
+        assertEquals(0, version.getMinorVersion());
+        assertEquals(1, version.getBuildVersion());
+        assertEquals(5, version.getPatchVersion());
+        assertEquals(Version.VersionType.RELEASE, version.getType());
+    }
+
+    @Test
+    public void testVersionTypeParsing() {
+        val version = Version.parse("1.0.1-BETA");
+        assertEquals(Version.VersionType.BETA, version.getType());
     }
 
     @Test

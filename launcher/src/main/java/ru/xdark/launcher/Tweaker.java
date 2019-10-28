@@ -8,6 +8,6 @@ public interface Tweaker extends Comparable<Tweaker> {
 
     @Override
     default int compareTo(Tweaker tweaker) {
-        return Integer.compare(getTweakOrder(), tweaker.getTweakOrder());
+        return Integer.compare(tweaker.getTweakOrder(), getTweakOrder());
     }
 }
