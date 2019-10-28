@@ -1,6 +1,6 @@
 package ru.xdark.launcher;
 
 public enum LauncherOption {
-    MULTIPLE_NAE_TRANSFORMERS,
+    MULTIPLE_NAME_TRANSFORMERS,
     LAUNCH_TARGET_REDEFINITION
 }

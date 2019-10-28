@@ -161,7 +161,7 @@ public abstract class ApplicationLauncher implements Launcher {
         for (int i = 0, j = nameTransformers.size(); i < j; i++) {
             val transformer = nameTransformers.get(i);
             val newName = handler.apply(transformer, className);
-            if (!isOptionSet(LauncherOption.MULTIPLE_NAE_TRANSFORMERS)) {
+            if (!isOptionSet(LauncherOption.MULTIPLE_NAME_TRANSFORMERS)) {
                 return newName == null ? className : newName;
             }
             if (newName != null) return newName;
