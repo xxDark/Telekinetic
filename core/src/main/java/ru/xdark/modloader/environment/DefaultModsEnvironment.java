@@ -29,6 +29,8 @@ public final class DefaultModsEnvironment implements ModsEnvironment {
     private final ResourceManager resourceManager;
     @Getter
     private final List<ModContainer> loadedMods;
+    @Getter
+    private final Version loaderVersion;
 
     public DefaultModsEnvironment(EnvironmentContext context) {
         Objects.requireNonNull(context, "context");
@@ -39,6 +41,7 @@ public final class DefaultModsEnvironment implements ModsEnvironment {
         this.dependenciesInjector = createInjector();
         this.resourceManager = null;
         this.loadedMods = Collections.unmodifiableList(context.loadedMods);
+        this.loaderVersion = context.loaderVersion;
     }
 
     private DependenciesInjector createInjector() {

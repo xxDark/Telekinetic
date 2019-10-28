@@ -10,7 +10,7 @@ public final class ClientTweaker implements Tweaker {
     @Override
     public void inject(LauncherInitializationContext context) {
         val launcher = context.getLauncher();
-       launcher.registerTransformer(new ClientBrandRetrieverTransformer(Modloader.instance().version()));
+       launcher.registerTransformer(new ClientBrandRetrieverTransformer(Modloader.instance().loaderVersion()));
     }
 
     @Override

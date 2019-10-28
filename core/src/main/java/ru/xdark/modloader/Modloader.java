@@ -20,14 +20,12 @@ import java.util.List;
 @Mod(
         name = "Modloader",
         id = "modloader",
-        version = Modloader.RAW_VERSION,
+        version ="1.1.2-BETA",
         authors= "__xDark"
 )
 public final class Modloader implements ResourcesContainer {
 
-    static final String RAW_VERSION = "1.1-BETA";
     private static final Modloader instance = new Modloader();
-    private final Version version = Version.parse(RAW_VERSION);
     private ModsEnvironment environment;
 
     public void inject(Launcher launcher) {
@@ -73,8 +71,8 @@ public final class Modloader implements ResourcesContainer {
         return environment.getLoadedMods();
     }
 
-    public Version version() {
-        return version;
+    public Version loaderVersion() {
+        return environment.getLoaderVersion();
     }
 
     public static Modloader instance() {

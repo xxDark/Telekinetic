@@ -4,6 +4,7 @@ import ru.xdark.modloader.di.DependenciesInjector;
 import ru.xdark.modloader.event.EventBus;
 import ru.xdark.modloader.mod.ModContainer;
 import ru.xdark.modloader.resources.ResourceManager;
+import ru.xdark.modloader.version.Version;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -21,4 +22,6 @@ public interface ModsEnvironment {
     DependenciesInjector getDependenciesInjector();
 
     List<ModContainer> getLoadedMods();
+
+    Version getLoaderVersion();
 }
