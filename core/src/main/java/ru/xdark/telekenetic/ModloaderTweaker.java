@@ -21,7 +21,7 @@ final class ModloaderTweaker implements Tweaker {
 
     @Override
     public void inject(LauncherInitializationContext context) {
-        log.info("Modloader injection");
+        log.info("ModLoader injection");
         val modLoader = this.modLoader;
         val mods = new ArrayList<ModContainer>();
         val primaryContainer = new ModLoaderContainer(modLoader);
@@ -37,7 +37,7 @@ final class ModloaderTweaker implements Tweaker {
                 modLoader
         );
         for (val locator : locators) mods.addAll(locator.findContainers(locateContext));
-        log.info("Found {} total mods", mods.size());
+        log.info("Found {} mod(s)", mods.size());
         modLoader.setup(new EnvironmentContext(
                 primaryContainer.getModDescription().getVersion(),
                 classLoader,
