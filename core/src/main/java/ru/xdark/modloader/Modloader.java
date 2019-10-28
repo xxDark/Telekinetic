@@ -38,7 +38,7 @@ public final class Modloader implements ResourcesContainer {
         for (val mod : environment.getLoadedMods()) {
             val instance = mod.getInstance();
             bus.registerListeners(instance);
-            injector.inject(injector);
+            injector.inject(instance);
         }
     }
 
