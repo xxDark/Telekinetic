@@ -66,6 +66,7 @@ public class Main {
             val arguments = Lists.newArrayList(args);
             val context = new LauncherInitializationContext(
                     launcher,
+                    classLoader,
                     arguments,
                     options.valueOf(gameDirectoryOption),
                     options.valueOf(assetsDirectoryOption),
