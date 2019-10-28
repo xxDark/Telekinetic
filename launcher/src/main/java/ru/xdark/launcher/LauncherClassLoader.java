@@ -125,9 +125,7 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
                 "java.",
                 "sun.",
                 "com.sun.",
-                "ru.xdark.modloader.",
-                "org.apache.logging.",
-                "joptsimple."
+                "ru.xdark.modloader."
         );
         launcher.addTransformerExclusions(
                 "javax.",

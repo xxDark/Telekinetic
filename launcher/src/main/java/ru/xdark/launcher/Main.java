@@ -59,21 +59,27 @@ public class Main {
             launcher.inject(classLoader);
             log.debug("gotoPhase(PRE_INITIALIZATION)");
             launcher.gotoPhase(LaunchPhase.PRE_INITIALIZATION);
-            val libsDir = options.valueOf(librariesOption);
-            log.debug("Libraries directory: {}", libsDir);
+            // TODO remove me?
+            val libsDir = options.valuesOf(librariesOption);
+            log.debug("Libraries directories: {}", libsDir);
             if (libsDir != null) {
-                if (!Files.isDirectory(libsDir)) {
-                    throw new NoSuchFileException(libsDir.normalize().toString());
+                for (val dir : libsDir) {
+                    if (!Files.isDirectory(dir)) {
+                        throw new NoSuchFileException(dir.normalize().toString());
+                    }
+                    launcher.appendDirectoryToClassPath(dir, path -> path.getFileName().toString().endsWith(".jar"));
                 }
-                launcher.appendDirectoryToClassPath(libsDir, path -> path.getFileName().toString().endsWith(".jar"));
             }
-            val nativesDir = options.valueOf(nativesOption);
+            val nativesDir = options.valuesOf(nativesOption);
             if (nativesDir != null) {
-                if (!Files.isDirectory(nativesDir)) {
-                    throw new NoSuchFileException(nativesDir.normalize().toString());
+                for (val dir : nativesDir) {
+                    if (!Files.isDirectory(dir)) {
+                        throw new NoSuchFileException(dir.normalize().toString());
+                    }
+                    launcher.appendDirectoryToNativePath(dir);
                 }
-                launcher.appendDirectoryToNativePath(nativesDir);
             }
+            ///
             val tweakers = options.valuesOf(tweakersOptions);
             log.debug("Injecting tweakers: {}", tweakers);
             for (val className : tweakers) {
