@@ -4,6 +4,8 @@ import joptsimple.OptionParser;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -97,11 +99,15 @@ public class Main {
             val target = launcher.getLaunchTarget();
             Objects.requireNonNull(target, "launchTarget");
             val launchClass = classLoader.loadClass(target);
-            val method = launchClass.getMethod("main", String[].class);
+            val main = MethodHandles.publicLookup().findStatic(
+                    launchClass,
+                    "main",
+                    MethodType.methodType(Void.TYPE, String[].class)
+            ).asFixedArity();
             log.debug("gotoPhase(START)");
             launcher.gotoPhase(LaunchPhase.START);
-            method.invoke(null, new Object[]{arguments.toArray(new String[0])});
-        } catch (Exception ex) {
+            main.invokeExact((String[]) arguments.toArray(new String[0]));
+        } catch (Throwable ex) {
             log.error("Unable to launch", ex);
             System.exit(1);
         }
