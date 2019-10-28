@@ -12,6 +12,11 @@ public final class ModContainer implements Identifiable<String> {
     @Delegate(types = Mod.class)
     private final Mod information;
 
+    @Override
+    public String getId() {
+        return this.information.id();
+    }
+
     public Object instance() {
         return this.instance;
     }

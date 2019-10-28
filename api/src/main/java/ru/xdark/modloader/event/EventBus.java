@@ -11,15 +11,15 @@ public interface EventBus {
 
     <T extends Event> RegisteredListener registerListener(Object mod, Class<T> eventClass, EventExecutor<T> executor, int priority);
 
-    void unregisterListener(Object mod, EventExecutor<?> executor);
+    boolean unregisterListener(Object mod, EventExecutor<?> executor);
 
-    void unregisterListeners(Object mod);
+    boolean unregisterListeners(Object mod);
 
-    void unregisterListeners(Object mod, Class<? extends Event> eventClass);
+    boolean unregisterListeners(Object mod, Class<? extends Event> eventClass);
 
     <T extends Event> CompletableFuture<T> dispatch(T event, Executor executor);
 
-    <T extends Event> void fireAndForget(T event);
+    <T extends Event> void fireAndForget(T event, Executor executor);
 
     boolean isListenerRegistered(Object mod, EventExecutor<?> executor);
 }
