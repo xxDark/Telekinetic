@@ -1,9 +1,15 @@
 package ru.xdark.launcher;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.experimental.Delegate;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,7 +26,15 @@ public abstract class ApplicationLauncher implements Launcher {
     private final List<Tweaker> tweakers = new ArrayList<>(8);
     private final List<ClassFileTransformer> transformers = new ArrayList<>(8);
     private final List<ClassNameTransformer> nameTransformers = new ArrayList<>(4);
-    @Getter private String launchTarget;
+    @Delegate(types = ClasspathAppender.class)
+    private ClasspathAppender classpathAppender;
+    @Getter
+    private String launchTarget;
+
+    @Override
+    public void inject(LauncherClassLoader classLoader) { // TODO remove this method
+        this.classpathAppender = classLoader;
+    }
 
     @Override
     public void addClassLoadingExclusions(String... exclusions) {
@@ -120,6 +134,26 @@ public abstract class ApplicationLauncher implements Launcher {
     @Override
     public boolean isTransformationExclusion(String className) {
         return this.transformationExclusions.stream().anyMatch(className::startsWith);
+    }
+
+    @Override
+    @SneakyThrows
+    public void appendUrlToNativePath(URL url) {
+        NativeUtil.addPathToNatives(Paths.get(url.toURI()));
+        NativeUtil.resetNativeCaches();
+    }
+
+    @Override
+    public void appendUriToNativePath(URI uri) {
+        NativeUtil.addPathToNatives(Paths.get(uri));
+        NativeUtil.resetNativeCaches();
+    }
+
+    @Override
+    @SneakyThrows
+    public void appendDirectoryToNativePath(Path directory) {
+        NativeUtil.addPathToNatives(directory);
+        NativeUtil.resetNativeCaches();
     }
 
     private String tryTransformClassName(String className, BiFunction<ClassNameTransformer, String, String> handler) {

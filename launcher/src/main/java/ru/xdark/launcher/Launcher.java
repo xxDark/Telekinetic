@@ -2,7 +2,9 @@ package ru.xdark.launcher;
 
 import java.util.Set;
 
-public interface Launcher {
+public interface Launcher extends ClasspathAppender, NativeLibrariesAppender {
+
+    void inject(LauncherClassLoader classLoader);
 
     void addClassLoadingExclusions(String... exclusions);
 

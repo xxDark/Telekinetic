@@ -92,6 +92,15 @@ public class IOUtil {
         return Files.newOutputStream(path, options);
     }
 
+    public boolean hasExtension(Path path, String extension) {
+        return path.getFileName().toString().endsWith('.' + extension);
+    }
+
+    public boolean hasExtensions(Path path, String... extensions) {
+        val fileName = path.getFileName().toString();
+        return Arrays.stream(extensions).map("."::concat).anyMatch(fileName::endsWith);
+    }
+
     public byte[] newThreadLocalBuffer() {
         return THREAD_LOCAL_BUFFER.get();
     }

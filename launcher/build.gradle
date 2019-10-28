@@ -1,5 +1,9 @@
 dependencies {
-    compileOnly guava
-    compileOnly log4j_api
-    compileOnly joptsimple
+    implementation log4j_api
+    implementation log4j_core
+    implementation joptsimple
+}
+
+jar {
+    from { configurations.runtimeClasspath.collect { zipTree(it) } }
 }

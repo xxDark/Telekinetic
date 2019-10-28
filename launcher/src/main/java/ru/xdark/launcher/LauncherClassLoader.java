@@ -1,17 +1,26 @@
 package ru.xdark.launcher;
 
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.JarURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.CodeSigner;
 import java.security.CodeSource;
+import java.util.function.Predicate;
 
 @Log4j2
-public final class LauncherClassLoader extends URLClassLoader {
+public final class LauncherClassLoader extends URLClassLoader implements ClasspathAppender {
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
     private final Launcher launcher;
     private final ClassLoader parent;
@@ -21,22 +30,6 @@ public final class LauncherClassLoader extends URLClassLoader {
         this.parent = parent;
         this.launcher = launcher;
         initialize(launcher);
-    }
-
-    private static void initialize(Launcher launcher) {
-        log.debug("Initializing launcher {}", launcher);
-        launcher.addClassLoadingExclusions(
-                "java.",
-                "sun.",
-                "com.sun.",
-                "me.xdark.modloader.",
-                "org.apache.logging."
-        );
-        launcher.addTransformerExclusions(
-                "javax.",
-                "org.objectweb.",
-                "com.google."
-        );
     }
 
     @Override
@@ -91,11 +84,56 @@ public final class LauncherClassLoader extends URLClassLoader {
                 classBytes = baos.toByteArray();
             }
             val result = handle.runTransformation(new ClassTransformation(name, transformed, untransformed, classBytes));
+            val toDefine = result.getClassBytes();
             val codeSource = new CodeSource(resource, signers);
-            return defineClass(transformed, classBytes, 0, classBytes.length, codeSource);
+            return defineClass(transformed, toDefine, 0, toDefine.length, codeSource);
         } catch (Exception ex) {
             throw new ClassNotFoundException(name, ex);
         }
+    }
+
+    @Override
+    public void appendUrlToClassPath(URL url) {
+        addURL(url);
+    }
+
+    @Override
+    @SneakyThrows
+    public void appendUriToClassPath(URI uri) {
+        addURL(uri.toURL());
+    }
+
+    @Override
+    @SneakyThrows
+    public void appendDirectoryToClassPath(Path directory, Predicate<Path> filter) {
+        Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                val result = super.visitFile(file, attrs);
+                if (filter == null || filter.test(file)) {
+                    appendUriToClassPath(file.toUri());
+                }
+                return result;
+            }
+        });
+    }
+
+    private static void initialize(Launcher launcher) {
+        log.debug("Initializing launcher {}", launcher);
+        launcher.addClassLoadingExclusions(
+                "java.",
+                "sun.",
+                "com.sun.",
+                "ru.xdark.modloader.",
+                "org.apache.logging.",
+                "joptsimple."
+        );
+        launcher.addTransformerExclusions(
+                "javax.",
+                "org.objectweb.",
+                "com.google."
+        );
     }
 
     static {

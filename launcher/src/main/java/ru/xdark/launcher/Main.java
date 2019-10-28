@@ -1,13 +1,15 @@
 package ru.xdark.launcher;
 
-import com.google.common.collect.Lists;
 import joptsimple.OptionParser;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
 import java.lang.reflect.Constructor;
 import java.net.URLClassLoader;
-import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Log4j2
@@ -20,15 +22,18 @@ public class Main {
                 .withRequiredArg()
                 .required();
         val tweakersOptions = parser.accepts("tweakClasses", "Launcher's tweak class(es)")
-                .withRequiredArg()
-                .required();
+                .withRequiredArg();
         val gameDirectoryOption = parser.accepts("gameDir", "Game's launch directory")
                 .withRequiredArg()
-                .ofType(Path.class)
                 .withValuesConvertedBy(new PathValueConverter());
         val assetsDirectoryOption = parser.accepts("assetsDir", "Game's assets directory")
                 .withRequiredArg()
-                .ofType(Path.class)
+                .withValuesConvertedBy(new PathValueConverter());
+        val librariesOption = parser.accepts("libsDir", "Libraries directory to load")
+                .withRequiredArg()
+                .withValuesConvertedBy(new PathValueConverter());
+        val nativesOption = parser.accepts("nativesDir", "Native libraries directory to load")
+                .withRequiredArg()
                 .withValuesConvertedBy(new PathValueConverter());
         val versionOption = parser.accepts("version", "Game's version").withRequiredArg();
 
@@ -48,9 +53,25 @@ public class Main {
             return;
         }
         try {
+            val classLoader = new LauncherClassLoader(launcher, ((URLClassLoader) ourLoader).getURLs(), ourLoader);
+            launcher.inject(classLoader);
             log.debug("gotoPhase(PRE_INITIALIZATION)");
             launcher.gotoPhase(LaunchPhase.PRE_INITIALIZATION);
-            val classLoader = new LauncherClassLoader(launcher, ((URLClassLoader) ourLoader).getURLs(), ourLoader);
+            val libsDir = options.valueOf(librariesOption);
+            log.debug("Libraries directory: {}", libsDir);
+            if (libsDir != null) {
+                if (!Files.isDirectory(libsDir)) {
+                    throw new NoSuchFileException(libsDir.normalize().toString());
+                }
+                launcher.appendDirectoryToClassPath(libsDir, path -> path.getFileName().toString().endsWith(".jar"));
+            }
+            val nativesDir = options.valueOf(nativesOption);
+            if (nativesDir != null) {
+                if (!Files.isDirectory(nativesDir)) {
+                    throw new NoSuchFileException(nativesDir.normalize().toString());
+                }
+                launcher.appendDirectoryToNativePath(nativesDir);
+            }
             val tweakers = options.valuesOf(tweakersOptions);
             log.debug("Injecting tweakers: {}", tweakers);
             for (val className : tweakers) {
@@ -63,7 +84,7 @@ public class Main {
             log.debug("gotoPhase(INITIALIZATION)");
             launcher.gotoPhase(LaunchPhase.INITIALIZATION);
 
-            val arguments = Lists.newArrayList(args);
+            val arguments = new ArrayList<>(Arrays.asList(args));
             val context = new LauncherInitializationContext(
                     launcher,
                     classLoader,
