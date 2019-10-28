@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Mod(
-        name = "ModLoader",
+        name = "Telekinetic",
         id = "modLoader",
         version = "1.1.3-BETA",
         authors = "__xDark"
