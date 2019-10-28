@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 public final class LauncherInitializationContext {
     private final Launcher launcher;
+    private final LauncherClassLoader classLoader;
     private final List<String> arguments;
     private final Path gameDirectory;
     private final Path assetsDirectory;

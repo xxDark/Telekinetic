@@ -3,6 +3,7 @@ package ru.xdark.modloader.minecraft;
 import lombok.val;
 import ru.xdark.launcher.Launcher;
 import ru.xdark.launcher.LauncherBootstrapper;
+import ru.xdark.modloader.Modloader;
 
 public final class ServerLauncherBootstrapper implements LauncherBootstrapper {
 
@@ -10,6 +11,7 @@ public final class ServerLauncherBootstrapper implements LauncherBootstrapper {
     public Launcher create() {
         val launcher = new ServerApplicationLauncher();
         launcher.setLaunchTarget("net.minecraft.server.MinecraftServer");
+        Modloader.inject(launcher);
         return launcher;
     }
 }

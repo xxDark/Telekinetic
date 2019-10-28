@@ -3,6 +3,7 @@ package ru.xdark.modloader.minecraft;
 import lombok.val;
 import ru.xdark.launcher.Launcher;
 import ru.xdark.launcher.LauncherBootstrapper;
+import ru.xdark.modloader.Modloader;
 
 public final class ClientLauncherBootstrapper implements LauncherBootstrapper {
 
@@ -10,6 +11,7 @@ public final class ClientLauncherBootstrapper implements LauncherBootstrapper {
     public Launcher create() {
         val launcher = new ClientApplicationLauncher();
         launcher.setLaunchTarget("net.minecraft.client.main.Main");
+        Modloader.inject(launcher);
         return launcher;
     }
 }
