@@ -127,7 +127,7 @@ public final class SimpleEventBus implements EventBus {
         if (modListeners.isEmpty()) byMods.remove(mod);
         if (!executors.isEmpty()) {
             executors.sort(Comparable::compareTo);
-        }
+        } else executorsMap.remove(eventClass);
         return unregistered;
     }
 
