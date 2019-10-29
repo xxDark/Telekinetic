@@ -1,4 +1,5 @@
 dependencies {
+    compileOnly joptsimple
     implementation asm
     implementation project(':api')
     implementation project(':core')
