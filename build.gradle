@@ -1,7 +1,8 @@
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
-    group 'ru.xdark'
+    group 'ru.xdark.telekinetic'
+    version '1.0'
 
     repositories {
         mavenLocal()

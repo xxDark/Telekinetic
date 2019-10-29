@@ -47,7 +47,7 @@ public final class SimpleEventBus implements EventBus {
                 log.debug("Primary listener is: {}", handle);
             } else {
                 registeredListener.attached = handle;
-                log.debug("Attached {} to {}", handle, listener);
+                log.debug("Attached {} to {}", handle, registeredListener);
                 registeredListener = handle;
             }
             registerListener(asEvent, mod, handle);
