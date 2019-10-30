@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 
-public interface ClassLoadingController {
+public interface ClassLoadingController extends ClasspathAppender {
 
     Class<?> findClass(String name, boolean resolve) throws ClassNotFoundException;
 
