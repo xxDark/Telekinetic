@@ -1,0 +1,5 @@
+dependencies {
+    compileOnly spongemixin
+    implementation project(':api')
+    implementation project(':launcher')
+}

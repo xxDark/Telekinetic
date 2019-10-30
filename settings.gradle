@@ -1,10 +1,11 @@
-rootProject.name = 'modloader'
+rootProject.name = 'telekinetic'
 include(
         'api',
         'core',
         'launcher',
         'minecraft',
         'minecraft:client',
-        'minecraft:server'
+        'minecraft:server',
+        'mixins'
 )
 
