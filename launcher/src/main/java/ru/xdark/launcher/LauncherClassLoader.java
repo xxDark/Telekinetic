@@ -32,7 +32,8 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
         controller.addClassLoadingExclusions(
                 "java.",
                 "sun.",
-                "ru.xdark.modloader."
+                "ru.xdark.modloader.",
+                "org.spongepowered."
         );
         controller.addTransformerExclusions(
                 "javax.",
