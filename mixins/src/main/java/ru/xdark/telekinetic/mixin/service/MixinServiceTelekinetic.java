@@ -1,4 +1,4 @@
-package ru.xdark.telekinetic.mixins.service;
+package ru.xdark.telekinetic.mixin.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
