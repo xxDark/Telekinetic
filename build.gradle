@@ -7,6 +7,10 @@ subprojects {
     repositories {
         mavenLocal()
         mavenCentral()
+        maven {
+            name = 'sponge'
+            url = 'http://repo.spongepowered.org/maven'
+        }
     }
 
     configurations {
@@ -44,5 +48,6 @@ subprojects {
         log4j_core = 'org.apache.logging.log4j:log4j-core:2.8.1'
         guava = 'com.google.guava:guava:21.0'
         joptsimple = 'net.sf.jopt-simple:jopt-simple:5.0.4'
+        spongemixin = 'org.spongepowered:mixin:0.8-preview-SNAPSHOT'
     }
 }

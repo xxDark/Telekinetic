@@ -1,9 +1,3 @@
-dependencies {
-    implementation project(':api')
-    implementation project(':core')
-    implementation project(':launcher')
-}
-
 jar {
     from { configurations.runtimeClasspath.collect { zipTree(it) } }
 }

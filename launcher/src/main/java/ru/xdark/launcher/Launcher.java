@@ -2,19 +2,9 @@ package ru.xdark.launcher;
 
 import java.util.Set;
 
-public interface Launcher extends ClasspathAppender, NativeLibrariesAppender {
+public interface Launcher extends ClassLoadingController, ClasspathAppender, NativeLibrariesAppender {
 
     void inject(LauncherClassLoader classLoader);
-
-    void addClassLoadingExclusions(String... exclusions);
-
-    void addClassLoadingExclusion(String exclusion);
-
-    void addTransformerExclusions(String... exclusions);
-
-    void addTransformerExclusion(String exclusion);
-
-    void registerTransformer(ClassFileTransformer transformer);
 
     void registerTweaker(Tweaker tweaker);
 
@@ -23,16 +13,6 @@ public interface Launcher extends ClasspathAppender, NativeLibrariesAppender {
     void setLaunchTarget(String target);
 
     String getLaunchTarget();
-
-    ClassTransformation runTransformation(ClassTransformation transformation);
-
-    String transformClassName(String className);
-
-    String untransformClassName(String className);
-
-    boolean isClassLoadingExclusion(String className);
-
-    boolean isTransformationExclusion(String className);
 
     Set<LauncherOption> getLauncherOptions();
 

@@ -6,6 +6,8 @@ import lombok.experimental.Delegate;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -13,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -25,15 +28,31 @@ public abstract class ApplicationLauncher implements Launcher {
     private final Set<String> transformationExclusions = new HashSet<>();
     private final List<Tweaker> tweakers = new ArrayList<>(8);
     private final List<ClassFileTransformer> transformers = new ArrayList<>(8);
+    private final List<ClassFileTransformer> transformersView = Collections.unmodifiableList(transformers);
     private final List<ClassNameTransformer> nameTransformers = new ArrayList<>(4);
     @Delegate(types = ClasspathAppender.class)
-    private ClasspathAppender classpathAppender;
+    private LauncherClassLoader classLoader;
     @Getter
     private String launchTarget;
 
     @Override
     public void inject(LauncherClassLoader classLoader) { // TODO remove this method
-        this.classpathAppender = classLoader;
+        this.classLoader = classLoader;
+    }
+
+    @Override
+    public Class<?> findClass(String name, boolean resolve) throws ClassNotFoundException {
+        return classLoader.findClass(name, resolve);
+    }
+
+    @Override
+    public Class<?> findClass(String name) throws ClassNotFoundException {
+        return classLoader.findClass(name);
+    }
+
+    @Override
+    public boolean isClassLoaded(String name) {
+        return classLoader.isClassLoaded(name);
     }
 
     @Override
@@ -134,6 +153,41 @@ public abstract class ApplicationLauncher implements Launcher {
     @Override
     public boolean isTransformationExclusion(String className) {
         return this.transformationExclusions.stream().anyMatch(className::startsWith);
+    }
+
+    @Override
+    public List<ClassFileTransformer> getTransformers() {
+        return this.transformersView;
+    }
+
+    @Override
+    public URL[] getClassPath() {
+        return this.classLoader.getURLs();
+    }
+
+    @Override
+    public URL findResource(String path) {
+        return this.classLoader.findResource(path);
+    }
+
+    @Override
+    public Enumeration<URL> findResources(String path) throws IOException {
+        return this.classLoader.findResources(path);
+    }
+
+    @Override
+    public URL findClassResource(String className) {
+        return findResource(className.replace('.', '/') + ".class");
+    }
+
+    @Override
+    public Enumeration<URL> findClassResources(String className) throws IOException {
+        return findResources(className.replace('.', '/') + ".class");
+    }
+
+    @Override
+    public InputStream getResourceAsStream(String path) {
+        return this.classLoader.getResourceAsStream(path);
     }
 
     @Override

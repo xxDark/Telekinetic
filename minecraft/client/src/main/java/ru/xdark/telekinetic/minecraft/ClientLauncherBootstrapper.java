@@ -4,7 +4,6 @@ import lombok.val;
 import ru.xdark.launcher.Launcher;
 import ru.xdark.launcher.LauncherBootstrapper;
 import ru.xdark.telekinetic.TelekineticModLoader;
-import ru.xdark.telekinetic.minecraft.tweakers.ClientTweaker;
 
 public final class ClientLauncherBootstrapper implements LauncherBootstrapper {
 
@@ -14,7 +13,7 @@ public final class ClientLauncherBootstrapper implements LauncherBootstrapper {
         launcher.setLaunchTarget("net.minecraft.client.main.Main");
         val loader = TelekineticModLoader.instance();
         loader.inject(launcher);
-        launcher.registerTweaker(new ClientTweaker(loader));
+        //launcher.registerTweaker(new ClientTweaker(loader));
         return launcher;
     }
 }

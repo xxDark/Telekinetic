@@ -22,19 +22,32 @@ import java.util.function.Predicate;
 @Log4j2
 public final class LauncherClassLoader extends URLClassLoader implements ClasspathAppender {
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
-    private final Launcher launcher;
+    private final ClassLoadingController controller;
     private final ClassLoader parent;
 
-    LauncherClassLoader(Launcher launcher, URL[] urls, ClassLoader parent) {
+    LauncherClassLoader(ClassLoadingController controller, URL[] urls, ClassLoader parent) {
         super(urls, null);
         this.parent = parent;
-        this.launcher = launcher;
-        initialize(launcher);
+        this.controller = controller;
+        controller.addClassLoadingExclusions(
+                "java.",
+                "sun.",
+                "ru.xdark.modloader."
+        );
+        controller.addTransformerExclusions(
+                "javax.",
+                "org.objectweb.",
+                "com.google."
+        );
     }
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        val handle = this.launcher;
+        return findClass(name, false);
+    }
+
+    Class<?> findClass(String name, boolean resolve) throws ClassNotFoundException {
+        val handle = this.controller;
         if (handle.isClassLoadingExclusion(name)) {
             return parent.loadClass(name);
         }
@@ -50,17 +63,19 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
             val cached = findLoadedClass(transformed);
             if (cached != null) return cached;
             val untransformed = handle.untransformClassName(name);
-            val resource = getResource(untransformed.replace('.', '/') + ".class");
+            val resource = findResource(untransformed.replace('.', '/') + ".class");
             if (resource == null) {
                 throw new ClassNotFoundException(untransformed);
             }
             val lastDot = untransformed.lastIndexOf('.');
             val packageName = lastDot == -1 ? "" : untransformed.substring(0, lastDot);
+            URL location = resource;
             val connection = resource.openConnection();
             connection.setDoInput(true);
             CodeSigner[] signers = null;
             if (connection instanceof JarURLConnection) {
                 val jarConnection = (JarURLConnection) connection;
+                location = jarConnection.getJarFileURL();
                 val manifest = jarConnection.getManifest();
                 if (manifest != null) {
                     val entry = jarConnection.getJarEntry();
@@ -85,11 +100,17 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
             }
             val result = handle.runTransformation(new ClassTransformation(name, transformed, untransformed, classBytes));
             val toDefine = result.getClassBytes();
-            val codeSource = new CodeSource(resource, signers);
-            return defineClass(transformed, toDefine, 0, toDefine.length, codeSource);
+            val codeSource = new CodeSource(location, signers);
+            val klass = defineClass(transformed, toDefine, 0, toDefine.length, codeSource);
+            if (resolve) resolveClass(klass);
+            return klass;
         } catch (Exception ex) {
             throw new ClassNotFoundException(name, ex);
         }
+    }
+
+    boolean isClassLoaded(String name) {
+        return findLoadedClass(name) != null;
     }
 
     @Override
@@ -117,21 +138,6 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
                 return result;
             }
         });
-    }
-
-    private static void initialize(Launcher launcher) {
-        log.debug("Initializing launcher {}", launcher);
-        launcher.addClassLoadingExclusions(
-                "java.",
-                "sun.",
-                "com.sun.",
-                "ru.xdark.modloader."
-        );
-        launcher.addTransformerExclusions(
-                "javax.",
-                "org.objectweb.",
-                "com.google."
-        );
     }
 
     static {
