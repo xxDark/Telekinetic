@@ -6,6 +6,6 @@ include(
         'minecraft',
         'minecraft:client',
         'minecraft:server',
-        'mixins'
+        'mixin'
 )
 
