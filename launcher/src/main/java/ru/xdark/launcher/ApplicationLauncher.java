@@ -202,6 +202,11 @@ public abstract class ApplicationLauncher implements Launcher {
     }
 
     @Override
+    public void setProperty(Object key, Object value) {
+        properties.put(key, value);
+    }
+
+    @Override
     public <T> T getProperty(Object key) {
         return (T) properties.get(key);
     }

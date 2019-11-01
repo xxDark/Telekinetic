@@ -15,17 +15,17 @@ public final class GlobalPropertyServiceTelekinetic implements IGlobalPropertySe
 
     @Override
     public <T> T getProperty(IPropertyKey key) {
-        return (T) RootLauncher.get().getProperties().get(((Key) key).key);
+        return RootLauncher.get().getProperty(((Key) key).key);
     }
 
     @Override
     public void setProperty(IPropertyKey key, Object value) {
-        RootLauncher.get().getProperties().put(((Key)key).key, value);
+        RootLauncher.get().setProperty(((Key) key).key, value);
     }
 
     @Override
     public <T> T getProperty(IPropertyKey key, T defaultValue) {
-        return (T) RootLauncher.get().getProperties().getOrDefault(((Key)key).key, defaultValue);
+        return RootLauncher.get().getProperty(((Key) key).key, defaultValue);
     }
 
     @Override

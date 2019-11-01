@@ -20,6 +20,8 @@ public interface Launcher extends ClassLoadingController, ClasspathAppender, Nat
 
     Properties getProperties();
 
+    void setProperty(Object key, Object value);
+
     <T> T getProperty(Object key);
 
     <T> T getProperty(Object key, T defaultValue);
