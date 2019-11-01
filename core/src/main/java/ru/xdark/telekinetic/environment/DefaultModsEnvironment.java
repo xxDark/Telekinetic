@@ -3,6 +3,7 @@ package ru.xdark.telekinetic.environment;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 import lombok.val;
+import ru.xdark.telekinetic.Side;
 import ru.xdark.telekinetic.di.DependenciesInjector;
 import ru.xdark.telekinetic.di.ReflectiveDependenciesInjector;
 import ru.xdark.telekinetic.event.EventBus;
@@ -36,6 +37,8 @@ public final class DefaultModsEnvironment implements ModsEnvironment {
     private final List<ModContainer> loadedMods;
     @Getter
     private final Version version;
+    @Getter
+    private final Side side;
     private final Map<Object, ModContainer> containerByInstancesMap;
 
     public DefaultModsEnvironment(EnvironmentContext context) {
@@ -48,8 +51,9 @@ public final class DefaultModsEnvironment implements ModsEnvironment {
         this.resourceManager = null;
         val loadedMods = context.loadedMods;
         this.loadedMods = Collections.unmodifiableList(loadedMods);
-        this.containerByInstancesMap = loadedMods.stream().collect(Collectors.toMap(ModContainer::getInstance, Function.identity()));
         this.version = context.loaderVersion;
+        this.side = context.side;
+        this.containerByInstancesMap = loadedMods.stream().collect(Collectors.toMap(ModContainer::getInstance, Function.identity()));
     }
 
     private DependenciesInjector createInjector() {

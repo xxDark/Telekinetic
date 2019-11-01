@@ -1,6 +1,8 @@
 package ru.xdark.launcher;
 
+import java.util.Properties;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public interface Launcher extends ClassLoadingController, ClasspathAppender, NativeLibrariesAppender {
 
@@ -15,6 +17,14 @@ public interface Launcher extends ClassLoadingController, ClasspathAppender, Nat
     String getLaunchTarget();
 
     Set<LauncherOption> getLauncherOptions();
+
+    Properties getProperties();
+
+    <T> T getProperty(Object key);
+
+    <T> T getProperty(Object key, T defaultValue);
+
+    <T> T getProperty(Object key, Supplier<T> defaultValueSupplier);
 
     boolean isOptionSet(LauncherOption option);
 

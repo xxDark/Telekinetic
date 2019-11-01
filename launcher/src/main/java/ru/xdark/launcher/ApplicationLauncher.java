@@ -1,6 +1,8 @@
 package ru.xdark.launcher;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.log4j.Log4j2;
@@ -19,10 +21,13 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 @Log4j2
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class ApplicationLauncher implements Launcher {
     private final Set<String> classLoadingExclusions = new HashSet<>();
     private final Set<String> transformationExclusions = new HashSet<>();
@@ -30,10 +35,16 @@ public abstract class ApplicationLauncher implements Launcher {
     private final List<ClassFileTransformer> transformers = new ArrayList<>(8);
     private final List<ClassFileTransformer> transformersView = Collections.unmodifiableList(transformers);
     private final List<ClassNameTransformer> nameTransformers = new ArrayList<>(4);
+    @Getter
+    private final Properties properties;
     @Delegate(types = ClasspathAppender.class)
     private LauncherClassLoader classLoader;
     @Getter
     private String launchTarget;
+
+    protected ApplicationLauncher() {
+        this(new Properties());
+    }
 
     @Override
     public void inject(LauncherClassLoader classLoader) { // TODO remove this method
@@ -188,6 +199,22 @@ public abstract class ApplicationLauncher implements Launcher {
     @Override
     public InputStream getResourceAsStream(String path) {
         return this.classLoader.getResourceAsStream(path);
+    }
+
+    @Override
+    public <T> T getProperty(Object key) {
+        return (T) properties.get(key);
+    }
+
+    @Override
+    public <T> T getProperty(Object key, T defaultValue) {
+        return (T) properties.getOrDefault(key, defaultValue);
+    }
+
+    @Override
+    public <T> T getProperty(Object key, Supplier<T> defaultValueSupplier) {
+        val value = (T) properties.get(key);
+        return value != null ? value : defaultValueSupplier.get();
     }
 
     @Override

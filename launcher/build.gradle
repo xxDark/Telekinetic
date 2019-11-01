@@ -2,6 +2,9 @@ dependencies {
     implementation log4j_api
     implementation log4j_core
     implementation joptsimple
+    implementation asm
+    implementation asm_commons
+    implementation asm_tree
 }
 
 jar {

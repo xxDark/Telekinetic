@@ -1,6 +1,5 @@
 package ru.xdark.telekinetic.mixin.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
@@ -14,6 +13,7 @@ import org.spongepowered.asm.service.ITransformerProvider;
 import org.spongepowered.asm.service.MixinServiceAbstract;
 import ru.xdark.launcher.ClassLoadingController;
 import ru.xdark.launcher.ClassTransformation;
+import ru.xdark.launcher.RootLauncher;
 import ru.xdark.telekinetic.util.IOUtil;
 
 import java.io.IOException;
@@ -24,10 +24,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public final class MixinServiceTelekinetic extends MixinServiceAbstract implements IClassProvider, IClassBytecodeProvider, ITransformerProvider, IClassTracker {
 
     private final ClassLoadingController controller;
+
+    public MixinServiceTelekinetic() { // I hate ServiceLoader
+        // Use RootLauncher as class loading controller
+        this.controller = RootLauncher.get();
+    }
 
     @Override
     public ClassNode getClassNode(String name) throws IOException {
@@ -117,7 +121,9 @@ public final class MixinServiceTelekinetic extends MixinServiceAbstract implemen
 
     @Override
     public Collection<String> getPlatformAgents() {
-        return Collections.emptyList();
+        return Collections.singletonList(
+                "ru.xdark.telekinetic.mixin.launch.platform.MixinPlatformAgentTelekinetic"
+        );
     }
 
     @Override

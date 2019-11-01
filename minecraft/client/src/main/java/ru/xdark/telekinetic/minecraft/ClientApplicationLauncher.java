@@ -6,8 +6,7 @@ import ru.xdark.launcher.LauncherOption;
 import java.util.Collections;
 import java.util.Set;
 
-public final class ClientApplicationLauncher extends ApplicationLauncher { // maybe extend MinecraftLauncher?
-
+public final class ClientApplicationLauncher extends ApplicationLauncher {
     @Override
     public Set<LauncherOption> getLauncherOptions() {
         return Collections.emptySet();

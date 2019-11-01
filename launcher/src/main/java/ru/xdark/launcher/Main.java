@@ -11,6 +11,7 @@ import java.lang.reflect.Constructor;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -26,9 +27,10 @@ public class Main {
                 .required();
         val tweakersOptions = parser.accepts("tweakClasses", "Launcher's tweak class(es)")
                 .withRequiredArg();
-        val gameDirectoryOption = parser.acceptsAll(Arrays.asList("gameDir", "workingDir"), "Game's launch directory")
+        val gameDirectoryOption = parser.accepts("workingDir", "Game's launch directory")
                 .withRequiredArg()
-                .withValuesConvertedBy(new PathValueConverter());
+                .withValuesConvertedBy(new PathValueConverter())
+                .defaultsTo(Paths.get("."));
         val librariesOption = parser.accepts("libsDir", "Libraries directory to load")
                 .withRequiredArg()
                 .withValuesConvertedBy(new PathValueConverter());
@@ -61,6 +63,7 @@ public class Main {
             System.exit(1);
             return;
         }
+        RootLauncher.set(launcher);
         try {
             val classLoader = new LauncherClassLoader(launcher, ((URLClassLoader) ourLoader).getURLs(), ourLoader);
             launcher.inject(classLoader);

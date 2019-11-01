@@ -1,5 +1,6 @@
 package ru.xdark.telekinetic.environment;
 
+import ru.xdark.telekinetic.Side;
 import ru.xdark.telekinetic.di.DependenciesInjector;
 import ru.xdark.telekinetic.event.EventBus;
 import ru.xdark.telekinetic.mod.ModContainer;
@@ -25,6 +26,8 @@ public interface ModsEnvironment {
     List<ModContainer> getLoadedMods();
 
     Version getVersion();
+
+    Side getSide();
 
     List<Resource> findResources(Object mod, String path);
 

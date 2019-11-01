@@ -1,6 +1,7 @@
 package ru.xdark.telekinetic.environment;
 
 import lombok.RequiredArgsConstructor;
+import ru.xdark.telekinetic.Side;
 import ru.xdark.telekinetic.mod.ModContainer;
 import ru.xdark.telekinetic.version.Version;
 
@@ -13,4 +14,5 @@ public final class EnvironmentContext {
     final ClassLoader loader;
     final Path workingDirectory;
     final List<ModContainer> loadedMods;
+    final Side side;
 }

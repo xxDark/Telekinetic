@@ -22,6 +22,8 @@ final class ModLoaderTweaker implements Tweaker {
     @Override
     public void inject(LauncherInitializationContext context) {
         log.info("ModLoader injection");
+        val launcher = context.getLauncher();
+        launcher.addClassLoadingExclusion("ru.xdark.telekinetic.");
         val modLoader = this.modLoader;
         val mods = new ArrayList<ModContainer>();
         val primaryContainer = new ModLoaderContainer(modLoader);
@@ -29,7 +31,6 @@ final class ModLoaderTweaker implements Tweaker {
         val locators = new ModsLocator[]{
                 new ClassPathModsLocator()
         };
-        val launcher = context.getLauncher();
         val classLoader = context.getClassLoader();
         val locateContext = new ModsLocateContext(
                 launcher,
@@ -42,7 +43,8 @@ final class ModLoaderTweaker implements Tweaker {
                 primaryContainer.getModDescription().getVersion(),
                 classLoader,
                 context.getGameDirectory(),
-                mods
+                mods,
+                launcher.getProperty("side", DefaultSides.UNKNOWN)
         ));
     }
 

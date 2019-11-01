@@ -2,7 +2,7 @@ package ru.xdark.telekinetic.mixin.service;
 
 import org.spongepowered.asm.service.IMixinServiceBootstrap;
 
-public class MixinServiceTelekineticBootstrap implements IMixinServiceBootstrap {
+public final class MixinServiceTelekineticBootstrap implements IMixinServiceBootstrap {
     @Override
     public String getName() {
         return "Telekinetic";
@@ -10,7 +10,7 @@ public class MixinServiceTelekineticBootstrap implements IMixinServiceBootstrap 
 
     @Override
     public String getServiceClassName() {
-        return "ru.xdark.telekinetic.mixin.service.TelekineticTransformerWrapper";
+        return "ru.xdark.telekinetic.mixin.service.MixinServiceTelekinetic";
     }
 
     @Override
