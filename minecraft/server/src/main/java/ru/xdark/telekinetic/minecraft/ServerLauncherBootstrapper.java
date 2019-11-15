@@ -11,7 +11,7 @@ public final class ServerLauncherBootstrapper extends TelekineticLauncherBootstr
     public Launcher create() {
         val launcher = new ServerApplicationLauncher();
         launcher.setLaunchTarget("net.minecraft.server.MinecraftServer");
-        launcher.getProperties().put("side", DefaultSides.SERVER);
+        launcher.setProperty("side", DefaultSides.SERVER);
         inject(launcher);
         return launcher;
     }

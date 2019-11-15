@@ -1,5 +1,6 @@
 package ru.xdark.telekinetic.mod;
 
+import cpw.mods.fml.common.asm.transformers.AccessTransformer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -8,6 +9,7 @@ import ru.xdark.telekinetic.version.Version;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,18 +22,19 @@ import java.util.jar.JarFile;
 
 @Log4j2
 public final class ClassPathModsLocator implements ModsLocator {
-
-    private static final String MANIFEST_KEY = "Mod-Class";
+    private static final String FMLAT_MANIFEST_KEY = "FMLAT";
+    private static final String MOD_MANIFEST_KEY = "Mod-Class";
 
     @Override
     public Collection<ModContainer> findContainers(ModsLocateContext ctx) {
-        val classPath = System.getProperty("java.class.path").split(File.pathSeparator);
+        val classLoader = ctx.getClassLoader();
+        val classPath = classLoader.getURLs();
         log.debug("Java ClassPath ({})", Arrays.toString(classPath));
         val toLoad = new HashMap<String, ModInformation>();
-        val classLoader = ctx.getClassLoader();
+        val launcher = ctx.getLauncher();
         for (val entry : classPath) {
             log.debug("Scanning classpath entry: {}", entry);
-            try (val jar = new JarFile(entry, true)) {
+            try (val jar = new JarFile(new File(entry.toURI()), true)) {
                 val manifest = jar.getManifest();
                 if (manifest == null) {
                     log.debug("Skipping {}: no manifest", entry);
@@ -42,9 +45,15 @@ public final class ClassPathModsLocator implements ModsLocator {
                     log.debug("Skipping {}: no main attributes", entry);
                     continue;
                 }
-                val className = attributes.getValue(MANIFEST_KEY);
+                // Detect FMLAT
+                val fmlat = attributes.getValue(FMLAT_MANIFEST_KEY);
+                if (fmlat != null) {
+                    log.debug("Detected FMLAT: {}", entry);
+                    launcher.registerTransformer(new AccessTransformer(jar, fmlat));
+                }
+                val className = attributes.getValue(MOD_MANIFEST_KEY);
                 if (className == null) {
-                    log.debug("Skipping {}: no '{}' entry", entry, MANIFEST_KEY);
+                    log.debug("Skipping {}: no '{}' entry", entry, MOD_MANIFEST_KEY);
                     continue;
                 }
                 log.info("Discovered mod: {}", className);
@@ -61,7 +70,7 @@ public final class ClassPathModsLocator implements ModsLocator {
                     continue;
                 }
                 toLoad.put(modAnnotation.id(), new ModInformation(modClass, modAnnotation));
-            } catch (IOException ex) {
+            } catch (IOException | URISyntaxException ex) {
                 log.error("Error scanning classpath entry:", ex);
             }
         }

@@ -51,7 +51,7 @@ public class Main {
         }
 
         val bootstrapperClass = options.valueOf(bootstrapperOption);
-        log.debug("Bootstrap class: {}", bootstrapperClass);
+        log.info("Bootstrap class: {}", bootstrapperClass);
         val ourLoader = Main.class.getClassLoader();
         Launcher launcher;
         try {
@@ -67,12 +67,12 @@ public class Main {
         try {
             val classLoader = new LauncherClassLoader(launcher, ((URLClassLoader) ourLoader).getURLs(), ourLoader);
             launcher.inject(classLoader);
-            log.debug("gotoPhase(PRE_INITIALIZATION)");
+            log.info("gotoPhase(PRE_INITIALIZATION)");
             launcher.gotoPhase(LaunchPhase.PRE_INITIALIZATION);
 
             // TODO remove me?
             val libsDir = options.valuesOf(librariesOption);
-            log.debug("Libraries directories: {}", libsDir);
+            log.info("Libraries directories: {}", libsDir);
             if (libsDir != null) {
                 for (val dir : libsDir) {
                     if (!Files.isDirectory(dir)) {
@@ -93,15 +93,14 @@ public class Main {
             //
 
             val tweakers = options.valuesOf(tweakersOptions);
-            log.debug("Injecting tweakers: {}", tweakers);
+            log.info("Injecting tweakers: {}", tweakers);
             for (val className : tweakers) {
-                launcher.addClassLoadingExclusions(className.substring(0, className.lastIndexOf('.')));
                 val constructor = (Constructor<Tweaker>) classLoader.loadClass(className).getDeclaredConstructor();
                 constructor.setAccessible(true);
                 val tweaker = constructor.newInstance();
                 launcher.registerTweaker(tweaker);
             }
-            log.debug("gotoPhase(INITIALIZATION)");
+            log.info("gotoPhase(INITIALIZATION)");
             launcher.gotoPhase(LaunchPhase.INITIALIZATION);
             val workingDir = options.valueOf(gameDirectoryOption);
 
@@ -113,6 +112,8 @@ public class Main {
                     workingDir
             );
             launcher.injectTweakers(context);
+            log.info("gotoPhase(PRE_START)");
+            launcher.gotoPhase(LaunchPhase.ABOUT_TO_START);
             val target = launcher.getLaunchTarget();
             Objects.requireNonNull(target, "launchTarget");
             val launchClass = classLoader.loadClass(target);
@@ -121,7 +122,7 @@ public class Main {
                     "main",
                     MethodType.methodType(Void.TYPE, String[].class)
             ).asFixedArity();
-            log.debug("gotoPhase(START)");
+            log.info("gotoPhase(START)");
             launcher.gotoPhase(LaunchPhase.START);
             main.invokeExact((String[]) arguments.toArray(new String[0]));
         } catch (Throwable ex) {

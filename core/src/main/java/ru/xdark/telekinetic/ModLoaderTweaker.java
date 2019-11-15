@@ -23,7 +23,6 @@ final class ModLoaderTweaker implements Tweaker {
     public void inject(LauncherInitializationContext context) {
         log.info("ModLoader injection");
         val launcher = context.getLauncher();
-        launcher.addClassLoadingExclusion("ru.xdark.telekinetic.");
         val modLoader = this.modLoader;
         val mods = new ArrayList<ModContainer>();
         val primaryContainer = new ModLoaderContainer(modLoader);

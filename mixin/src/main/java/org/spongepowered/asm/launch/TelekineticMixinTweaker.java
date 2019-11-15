@@ -1,6 +1,8 @@
 package org.spongepowered.asm.launch;
 
 import org.spongepowered.asm.launch.platform.CommandLineOptions;
+import org.spongepowered.asm.mixin.EnvironmentBridge;
+import ru.xdark.launcher.LaunchPhase;
 import ru.xdark.launcher.LauncherInitializationContext;
 import ru.xdark.launcher.Tweaker;
 
@@ -12,7 +14,6 @@ public final class TelekineticMixinTweaker implements Tweaker {
 
     @Override
     public void inject(LauncherInitializationContext context) {
-        context.getLauncher().addClassLoadingExclusion("org.spongepowered.");
         MixinBootstrap.start();
         MixinBootstrap.doInit(CommandLineOptions.ofArgs(context.getArguments()));
         MixinBootstrap.inject();
@@ -20,6 +21,13 @@ public final class TelekineticMixinTweaker implements Tweaker {
 
     @Override
     public int getTweakOrder() {
-        return Integer.MAX_VALUE - 17;
+        return Integer.MAX_VALUE - 15;
+    }
+
+    @Override
+    public void gotoPhase(LaunchPhase phase) {
+        if (phase == LaunchPhase.ABOUT_TO_START) {
+            EnvironmentBridge.gotoDefaultPhase();
+        }
     }
 }

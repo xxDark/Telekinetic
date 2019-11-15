@@ -1,10 +1,11 @@
-package ru.xdark.telekinetic.mixin.service;
+package org.spongepowered.telekinetic;
 
 import lombok.val;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.launch.platform.container.ContainerHandleURI;
 import org.spongepowered.asm.launch.platform.container.IContainerHandle;
+import org.spongepowered.asm.mixin.transformer.TelekineticProxy;
 import org.spongepowered.asm.service.IClassBytecodeProvider;
 import org.spongepowered.asm.service.IClassProvider;
 import org.spongepowered.asm.service.IClassTracker;
@@ -40,8 +41,8 @@ public final class MixinServiceTelekinetic extends MixinServiceAbstract implemen
 
     @Override
     public ClassNode getClassNode(String name, boolean runTransformers) throws IOException {
-        String transformedName = name.replace('/', '.');
-        String untransformClassName = this.controller.untransformClassName(transformedName);
+        val transformedName = name.replace('/', '.');
+        val untransformClassName = this.controller.untransformClassName(transformedName);
         URL resource = this.controller.findClassResource(transformedName);
         if (resource == null) {
             resource = this.controller.findClassResource(untransformClassName);
@@ -122,7 +123,7 @@ public final class MixinServiceTelekinetic extends MixinServiceAbstract implemen
     @Override
     public Collection<String> getPlatformAgents() {
         return Collections.singletonList(
-                "ru.xdark.telekinetic.mixin.launch.platform.MixinPlatformAgentTelekinetic"
+                "org.spongepowered.telekinetic.MixinPlatformAgentTelekinetic"
         );
     }
 
@@ -174,5 +175,10 @@ public final class MixinServiceTelekinetic extends MixinServiceAbstract implemen
             restrictions = (restrictions.length() > 0 ? restrictions + "," : "") + "PACKAGE_TRANSFORMER_EXCLUSION";
         }
         return restrictions;
+    }
+
+    @Override
+    public void beginPhase() {
+        controller.registerTransformer(new TelekineticProxy());
     }
 }

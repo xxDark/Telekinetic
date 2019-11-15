@@ -1,4 +1,4 @@
-package ru.xdark.telekinetic.mixin.launch.platform;
+package org.spongepowered.telekinetic;
 
 import org.spongepowered.asm.launch.platform.IMixinPlatformServiceAgent;
 import org.spongepowered.asm.launch.platform.MixinPlatformAgentAbstract;

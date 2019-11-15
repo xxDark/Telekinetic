@@ -11,7 +11,7 @@ public final class ClientLauncherBootstrapper extends TelekineticLauncherBootstr
     public Launcher create() {
         val launcher = new ClientApplicationLauncher();
         launcher.setLaunchTarget("net.minecraft.client.main.Main");
-        launcher.getProperties().put("side", DefaultSides.CLIENT);
+        launcher.setProperty("side", DefaultSides.CLIENT);
         inject(launcher);
         //launcher.registerTweaker(new ClientTweaker(loader));
         return launcher;

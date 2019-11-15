@@ -6,6 +6,8 @@ public interface Tweaker extends Comparable<Tweaker> {
 
     int getTweakOrder();
 
+    default void gotoPhase(LaunchPhase phase) { }
+
     @Override
     default int compareTo(Tweaker tweaker) {
         return Integer.compare(tweaker.getTweakOrder(), getTweakOrder());

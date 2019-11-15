@@ -1,4 +1,4 @@
-package ru.xdark.telekinetic.mixin.service;
+package org.spongepowered.telekinetic;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public final class GlobalPropertyServiceTelekinetic implements IGlobalPropertySe
 
     @Override
     public String getPropertyString(IPropertyKey key, String defaultValue) {
-        return getPropertyString(key, defaultValue);
+        return getProperty(key, defaultValue);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

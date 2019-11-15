@@ -1,4 +1,4 @@
-package ru.xdark.telekinetic.mixin.service;
+package org.spongepowered.telekinetic;
 
 import org.spongepowered.asm.service.IMixinServiceBootstrap;
 
@@ -10,7 +10,7 @@ public final class MixinServiceTelekineticBootstrap implements IMixinServiceBoot
 
     @Override
     public String getServiceClassName() {
-        return "ru.xdark.telekinetic.mixin.service.MixinServiceTelekinetic";
+        return "org.spongepowered.telekinetic.MixinServiceTelekinetic";
     }
 
     @Override

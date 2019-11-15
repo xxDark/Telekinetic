@@ -1,1 +1,1 @@
-ru.xdark.telekinetic.mixin.service.MixinServiceTelekineticBootstrap
+org.spongepowered.telekinetic.MixinServiceTelekineticBootstrap

@@ -69,35 +69,35 @@ public abstract class ApplicationLauncher implements Launcher {
     @Override
     public void addClassLoadingExclusions(String... exclusions) {
         Collections.addAll(this.classLoadingExclusions, exclusions);
-        log.debug("Added classloading exclusions: {}", Arrays.toString(exclusions));
+        log.info("Added classloading exclusions: {}", Arrays.toString(exclusions));
     }
 
     @Override
     public void addClassLoadingExclusion(String exclusion) {
         this.classLoadingExclusions.add(exclusion);
-        log.debug("Added classloading exclusion: {}", exclusion);
+        log.info("Added classloading exclusion: {}", exclusion);
     }
 
     @Override
     public void addTransformerExclusions(String... exclusions) {
         Collections.addAll(this.transformationExclusions, exclusions);
-        log.debug("Added transformation exclusions: {}", Arrays.toString(exclusions));
+        log.info("Added transformation exclusions: {}", Arrays.toString(exclusions));
     }
 
     @Override
     public void addTransformerExclusion(String exclusion) {
         this.transformationExclusions.add(exclusion);
-        log.debug("Added transformation exclusion: {}", exclusion);
+        log.info("Added transformation exclusion: {}", exclusion);
     }
 
     @Override
     public void registerTransformer(ClassFileTransformer transformer) {
         Objects.requireNonNull(transformer, "transformer");
         this.transformers.add(transformer);
-        log.debug("Registered transformer: {}", transformer);
+        log.info("Registered transformer: {}", transformer);
         if (transformer instanceof ClassNameTransformer) {
             this.nameTransformers.add((ClassNameTransformer) transformer);
-            log.debug("Registered class name transformer: {}", transformer);
+            log.info("Registered class name transformer: {}", transformer);
         }
     }
 
@@ -107,7 +107,7 @@ public abstract class ApplicationLauncher implements Launcher {
         val tweakers = this.tweakers;
         tweakers.add(tweaker);
         tweakers.sort(Tweaker::compareTo);
-        log.debug("Registered tweaker: {} w/ tweakOrder: {}", tweaker, tweaker.getTweakOrder());
+        log.info("Registered tweaker: {} w/ tweakOrder: {}", tweaker, tweaker.getTweakOrder());
     }
 
     @Override
@@ -121,14 +121,14 @@ public abstract class ApplicationLauncher implements Launcher {
 
     @Override
     public void setLaunchTarget(String target) {
-        log.debug("Trying to set launchTarget to: {}", target);
+        log.info("Trying to set launchTarget to: {}", target);
         if (this.launchTarget != null && !isOptionSet(LauncherOption.LAUNCH_TARGET_REDEFINITION)) {
             // Once launchTarget is set, it cannot be modified
             log.warn("Attempted to change launchTarget after it has been set! (from {} to {})", this.launchTarget, target);
             Thread.dumpStack();
             return;
         }
-        log.debug("Set launcherTarget to: {}", target);
+        log.info("Set launcherTarget to: {}", target);
         this.launchTarget = target;
     }
 
@@ -178,12 +178,12 @@ public abstract class ApplicationLauncher implements Launcher {
 
     @Override
     public URL findResource(String path) {
-        return this.classLoader.findResource(path);
+        return this.classLoader.getResource(path);
     }
 
     @Override
     public Enumeration<URL> findResources(String path) throws IOException {
-        return this.classLoader.findResources(path);
+        return this.classLoader.getResources(path);
     }
 
     @Override
@@ -259,5 +259,10 @@ public abstract class ApplicationLauncher implements Launcher {
     public boolean isOptionSet(LauncherOption option) {
         val options = getLauncherOptions();
         return options != null && options.contains(option);
+    }
+
+    @Override
+    public void gotoPhase(LaunchPhase phase) {
+        this.tweakers.forEach(tweaker -> tweaker.gotoPhase(phase));
     }
 }

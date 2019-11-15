@@ -32,7 +32,8 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
         controller.addClassLoadingExclusions(
                 "java.",
                 "sun.",
-                "ru.xdark.launcher."
+                "ru.xdark.launcher.",
+                "ru.xdark.telekinetic."
         );
         controller.addTransformerExclusions(
                 "javax.",
@@ -70,7 +71,7 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
             val untransformed = handle.untransformClassName(name);
             val resource = findResource(untransformed.replace('.', '/') + ".class");
             if (resource == null) {
-                throw new ClassNotFoundException(untransformed);
+                return parent.loadClass(name);
             }
             val lastDot = untransformed.lastIndexOf('.');
             val packageName = lastDot == -1 ? "" : untransformed.substring(0, lastDot);

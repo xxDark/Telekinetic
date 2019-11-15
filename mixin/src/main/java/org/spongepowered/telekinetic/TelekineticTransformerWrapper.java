@@ -1,4 +1,4 @@
-package ru.xdark.telekinetic.mixin.service;
+package org.spongepowered.telekinetic;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
