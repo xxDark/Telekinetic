@@ -52,6 +52,10 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
         return findClass(name, false);
     }
 
+    Class<?> findLoadedClass0(String name) {
+        return findLoadedClass(name);
+    }
+
     Class<?> findClass(String name, boolean resolve) throws ClassNotFoundException {
         val handle = this.controller;
         if (handle.isClassLoadingExclusion(name)) {

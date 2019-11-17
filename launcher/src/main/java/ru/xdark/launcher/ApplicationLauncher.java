@@ -21,6 +21,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -52,13 +53,18 @@ public abstract class ApplicationLauncher implements Launcher {
     }
 
     @Override
+    public Class<?> findLoadedClass(String name) {
+        return classLoader.findLoadedClass0(normalizeClassName(name));
+    }
+
+    @Override
     public Class<?> findClass(String name, boolean resolve) throws ClassNotFoundException {
-        return classLoader.findClass(name, resolve);
+        return classLoader.findClass(normalizeClassName(name), resolve);
     }
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
-        return classLoader.findClass(name);
+        return classLoader.findClass(normalizeClassName(name));
     }
 
     @Override
@@ -113,10 +119,18 @@ public abstract class ApplicationLauncher implements Launcher {
     @Override
     public void injectTweakers(LauncherInitializationContext context) {
         Objects.requireNonNull(context, "context");
-        this.tweakers.forEach(tweaker -> {
+        val tweakersList = this.tweakers;
+        if (tweakersList.isEmpty()) return;
+        val queue = new PriorityQueue<Tweaker>();
+        while (true) {
+            // Loop until all tweakers are injected
+            queue.addAll(tweakersList);
+            tweakersList.clear();
+            val tweaker = queue.poll();
             log.info("Calling tweaker {}", tweaker.getClass().getName());
             tweaker.inject(context);
-        });
+            if (tweakersList.isEmpty()) return;
+        }
     }
 
     @Override
@@ -242,6 +256,18 @@ public abstract class ApplicationLauncher implements Launcher {
         NativeUtil.resetNativeCaches();
     }
 
+    @Override
+    public boolean isOptionSet(LauncherOption option) {
+        val options = getLauncherOptions();
+        return options != null && options.contains(option);
+    }
+
+    @Override
+    public void gotoPhase(LaunchPhase phase) {
+        this.tweakers.forEach(tweaker -> tweaker.gotoPhase(phase));
+    }
+
+
     private String tryTransformClassName(String className, BiFunction<ClassNameTransformer, String, String> handler) {
         val nameTransformers = this.nameTransformers;
         for (int i = 0, j = nameTransformers.size(); i < j; i++) {
@@ -255,14 +281,7 @@ public abstract class ApplicationLauncher implements Launcher {
         return className;
     }
 
-    @Override
-    public boolean isOptionSet(LauncherOption option) {
-        val options = getLauncherOptions();
-        return options != null && options.contains(option);
-    }
-
-    @Override
-    public void gotoPhase(LaunchPhase phase) {
-        this.tweakers.forEach(tweaker -> tweaker.gotoPhase(phase));
+    private static String normalizeClassName(String name) {
+        return name.replace('/', '.');
     }
 }

@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface ClassLoadingController extends ClasspathAppender {
 
+    Class<?> findLoadedClass(String name);
+
     Class<?> findClass(String name, boolean resolve) throws ClassNotFoundException;
 
     Class<?> findClass(String name) throws ClassNotFoundException;
