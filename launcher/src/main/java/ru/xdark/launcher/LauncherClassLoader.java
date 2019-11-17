@@ -108,8 +108,11 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
                 }
                 classBytes = baos.toByteArray();
             }
-            val result = handle.runTransformation(new ClassTransformation(name, transformed, untransformed, classBytes));
-            val toDefine = result.getClassBytes();
+            byte[] toDefine;
+            if (!handle.isTransformationExclusion(name)) {
+                val result = handle.runTransformation(new ClassTransformation(name, transformed, untransformed, classBytes));
+                toDefine = result.getClassBytes();
+            } else toDefine = classBytes;
             val codeSource = new CodeSource(location, signers);
             val klass = defineClass(transformed, toDefine, 0, toDefine.length, codeSource);
             if (resolve) resolveClass(klass);

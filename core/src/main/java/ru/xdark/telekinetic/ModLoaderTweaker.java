@@ -49,6 +49,6 @@ final class ModLoaderTweaker implements Tweaker {
 
     @Override
     public int getTweakOrder() {
-        return Integer.MAX_VALUE - 16; // reserve 16 values if someone wants to be first :x
+        return Integer.MAX_VALUE - 4; // reserve 4 values if someone wants to be first :x
     }
 }

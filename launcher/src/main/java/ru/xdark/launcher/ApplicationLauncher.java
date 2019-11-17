@@ -119,18 +119,10 @@ public abstract class ApplicationLauncher implements Launcher {
     @Override
     public void injectTweakers(LauncherInitializationContext context) {
         Objects.requireNonNull(context, "context");
-        val tweakersList = this.tweakers;
-        if (tweakersList.isEmpty()) return;
-        val queue = new PriorityQueue<Tweaker>();
-        while (true) {
-            // Loop until all tweakers are injected
-            queue.addAll(tweakersList);
-            tweakersList.clear();
-            val tweaker = queue.poll();
-            log.info("Calling tweaker {}", tweaker.getClass().getName());
+        this.tweakers.forEach(tweaker -> {
+            log.info("Calling tweaker: {}", tweaker);
             tweaker.inject(context);
-            if (tweakersList.isEmpty()) return;
-        }
+        });
     }
 
     @Override

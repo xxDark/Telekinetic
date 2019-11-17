@@ -1,5 +1,6 @@
 package org.spongepowered.asm.launch;
 
+import lombok.val;
 import org.spongepowered.asm.launch.platform.CommandLineOptions;
 import org.spongepowered.asm.mixin.EnvironmentBridge;
 import ru.xdark.launcher.LaunchPhase;
@@ -13,9 +14,11 @@ import ru.xdark.launcher.Tweaker;
 public final class TelekineticMixinTweaker implements Tweaker {
 
     @Override
-    public void inject(LauncherInitializationContext context) {
+    public void inject(LauncherInitializationContext ctx) {
+        val launcher = ctx.getLauncher();
+        launcher.addTransformerExclusion("org.spongepowered.asm.");
         MixinBootstrap.start();
-        MixinBootstrap.doInit(CommandLineOptions.ofArgs(context.getArguments()));
+        MixinBootstrap.doInit(CommandLineOptions.ofArgs(ctx.getArguments()));
         MixinBootstrap.inject();
     }
 
@@ -26,7 +29,7 @@ public final class TelekineticMixinTweaker implements Tweaker {
 
     @Override
     public void gotoPhase(LaunchPhase phase) {
-        if (phase == LaunchPhase.ABOUT_TO_START) {
+        if (phase.getType() == LaunchPhase.PhaseType.ABOUT_TO_START) {
             EnvironmentBridge.gotoDefaultPhase();
         }
     }

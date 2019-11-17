@@ -4,6 +4,7 @@ import joptsimple.OptionParser;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.jar.JarFile;
 
 @Log4j2
 public class Main {
@@ -68,7 +70,7 @@ public class Main {
             val classLoader = new LauncherClassLoader(launcher, ((URLClassLoader) ourLoader).getURLs(), ourLoader);
             launcher.inject(classLoader);
             log.info("gotoPhase(PRE_INITIALIZATION)");
-            launcher.gotoPhase(LaunchPhase.PRE_INITIALIZATION);
+            launcher.gotoPhase(LaunchPhase.makePhase(null, LaunchPhase.PhaseType.PRE_INITIALIZATION));
 
             // TODO remove me?
             val libsDir = options.valuesOf(librariesOption);
@@ -100,10 +102,31 @@ public class Main {
                 val tweaker = constructor.newInstance();
                 launcher.registerTweaker(tweaker);
             }
+            log.info("Scanning for classpath tweakers");
+            for (val url : classLoader.getURLs()) {
+                try {
+                    val uri = url.toURI();
+                    try (val jarFile = new JarFile(new File(uri), true)) {
+                        val manifest = jarFile.getManifest();
+                        if (manifest == null) continue;
+                        val attrs = manifest.getMainAttributes();
+                        if (attrs == null) continue;
+                        val classNames = attrs.getValue("TTweakClass");
+                        if (classNames == null) continue;
+                        log.info("Detected jar file with Telekinetic tweakers: {}/{}", uri, classNames);
+                        for (val className : classNames.split(",")) {
+                            val constructor = (Constructor<Tweaker>) classLoader.loadClass(className).getDeclaredConstructor();
+                            constructor.setAccessible(true);
+                            val tweaker = constructor.newInstance();
+                            launcher.registerTweaker(tweaker);
+                        }
+                    }
+                } catch (Exception ex) {
+                    log.warn("Unable to open {}", url, ex);
+                }
+            }
             log.info("gotoPhase(INITIALIZATION)");
-            launcher.gotoPhase(LaunchPhase.INITIALIZATION);
             val workingDir = options.valueOf(gameDirectoryOption);
-
             val arguments = new ArrayList<>(Arrays.asList(args));
             val context = new LauncherInitializationContext(
                     launcher,
@@ -111,9 +134,10 @@ public class Main {
                     arguments,
                     workingDir
             );
+            launcher.gotoPhase(LaunchPhase.makePhase(context, LaunchPhase.PhaseType.INITIALIZATION));
             launcher.injectTweakers(context);
-            log.info("gotoPhase(PRE_START)");
-            launcher.gotoPhase(LaunchPhase.ABOUT_TO_START);
+            log.info("gotoPhase(ABOUT_TO_START)");
+            launcher.gotoPhase(LaunchPhase.makePhase(context, LaunchPhase.PhaseType.ABOUT_TO_START));
             val target = launcher.getLaunchTarget();
             Objects.requireNonNull(target, "launchTarget");
             val launchClass = classLoader.loadClass(target);
@@ -123,7 +147,7 @@ public class Main {
                     MethodType.methodType(Void.TYPE, String[].class)
             ).asFixedArity();
             log.info("gotoPhase(START)");
-            launcher.gotoPhase(LaunchPhase.START);
+            launcher.gotoPhase(LaunchPhase.makePhase(context, LaunchPhase.PhaseType.START));
             main.invokeExact((String[]) arguments.toArray(new String[0]));
         } catch (Throwable ex) {
             log.error("Unable to launch", ex);
