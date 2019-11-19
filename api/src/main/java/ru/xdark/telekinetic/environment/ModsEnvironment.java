@@ -27,6 +27,8 @@ public interface ModsEnvironment {
 
     Version getVersion();
 
+    ModContainer findContainer(Object mod);
+
     Side getSide();
 
     List<Resource> findResources(Object mod, String path);

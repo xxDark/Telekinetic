@@ -56,6 +56,11 @@ public final class DefaultModsEnvironment implements ModsEnvironment {
         this.containerByInstancesMap = loadedMods.stream().collect(Collectors.toMap(ModContainer::getInstance, Function.identity()));
     }
 
+    @Override
+    public ModContainer findContainer(Object mod) {
+        return this.containerByInstancesMap.get(mod);
+    }
+
     private DependenciesInjector createInjector() {
         val injector = new ReflectiveDependenciesInjector();
         injector.registerInjector(ModsEnvironment.class, __ -> this);

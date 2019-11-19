@@ -19,25 +19,11 @@ import java.util.List;
         version = "1.1.4-BETA",
         authors = "__xDark"
 )
-public interface ModLoader {
+public interface ModLoader extends ModsEnvironment {
 
     void inject(Launcher launcher);
 
     void setup(EnvironmentContext ctx);
 
     ModsEnvironment getEnvironment();
-
-    Path getWorkingDirectory();
-
-    Path getConfigsDirectory();
-
-    ResourceManager getResourceManager();
-
-    EventBus getEventBus();
-
-    DependenciesInjector getDependenciesInjector();
-
-    List<ModContainer> getLoadedMods();
-
-    Version getVersion();
 }
