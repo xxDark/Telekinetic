@@ -4,8 +4,6 @@ import ru.xdark.telekinetic.Side;
 import ru.xdark.telekinetic.di.DependenciesInjector;
 import ru.xdark.telekinetic.event.EventBus;
 import ru.xdark.telekinetic.mod.ModContainer;
-import ru.xdark.telekinetic.resources.Resource;
-import ru.xdark.telekinetic.resources.ResourceManager;
 import ru.xdark.telekinetic.version.Version;
 
 import java.nio.file.Path;
@@ -16,8 +14,6 @@ public interface ModsEnvironment {
     Path getWorkingDirectory();
 
     Path getConfigsDirectory();
-
-    ResourceManager getResourceManager();
 
     EventBus getEventBus();
 
@@ -30,8 +26,4 @@ public interface ModsEnvironment {
     ModContainer findContainer(Object mod);
 
     Side getSide();
-
-    List<Resource> findResources(Object mod, String path);
-
-    boolean hasResource(Object mod, String path);
 }

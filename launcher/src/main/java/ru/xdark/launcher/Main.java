@@ -4,19 +4,16 @@ import joptsimple.OptionParser;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.jar.JarFile;
+import java.util.ServiceLoader;
 
 @Log4j2
 public class Main {
@@ -33,12 +30,6 @@ public class Main {
                 .withRequiredArg()
                 .withValuesConvertedBy(new PathValueConverter())
                 .defaultsTo(Paths.get("."));
-        val librariesOption = parser.accepts("libsDir", "Libraries directory to load")
-                .withRequiredArg()
-                .withValuesConvertedBy(new PathValueConverter());
-        val nativesOption = parser.accepts("nativesDir", "Native libraries directory to load")
-                .withRequiredArg()
-                .withValuesConvertedBy(new PathValueConverter());
         val helpOption = parser.acceptsAll(Arrays.asList("h", "help"), "Prints help").forHelp();
         parser.allowsUnrecognizedOptions();
 
@@ -71,29 +62,6 @@ public class Main {
             launcher.inject(classLoader);
             log.info("gotoPhase(PRE_INITIALIZATION)");
             launcher.gotoPhase(LaunchPhase.makePhase(null, LaunchPhase.PhaseType.PRE_INITIALIZATION));
-
-            // TODO remove me?
-            val libsDir = options.valuesOf(librariesOption);
-            log.info("Libraries directories: {}", libsDir);
-            if (libsDir != null) {
-                for (val dir : libsDir) {
-                    if (!Files.isDirectory(dir)) {
-                        throw new NoSuchFileException(dir.normalize().toString());
-                    }
-                    launcher.appendDirectoryToClassPath(dir, path -> path.getFileName().toString().endsWith(".jar"));
-                }
-            }
-            val nativesDir = options.valuesOf(nativesOption);
-            if (nativesDir != null) {
-                for (val dir : nativesDir) {
-                    if (!Files.isDirectory(dir)) {
-                        throw new NoSuchFileException(dir.normalize().toString());
-                    }
-                    launcher.appendDirectoryToNativePath(dir);
-                }
-            }
-            //
-
             val tweakers = options.valuesOf(tweakersOptions);
             log.info("Injecting tweakers: {}", tweakers);
             for (val className : tweakers) {
@@ -103,27 +71,9 @@ public class Main {
                 launcher.registerTweaker(tweaker);
             }
             log.info("Scanning for classpath tweakers");
-            for (val url : classLoader.getURLs()) {
-                try {
-                    val uri = url.toURI();
-                    try (val jarFile = new JarFile(new File(uri), true)) {
-                        val manifest = jarFile.getManifest();
-                        if (manifest == null) continue;
-                        val attrs = manifest.getMainAttributes();
-                        if (attrs == null) continue;
-                        val classNames = attrs.getValue("TTweakClass");
-                        if (classNames == null) continue;
-                        log.info("Detected jar file with Telekinetic tweakers: {}/{}", uri, classNames);
-                        for (val className : classNames.split(",")) {
-                            val constructor = (Constructor<Tweaker>) classLoader.loadClass(className).getDeclaredConstructor();
-                            constructor.setAccessible(true);
-                            val tweaker = constructor.newInstance();
-                            launcher.registerTweaker(tweaker);
-                        }
-                    }
-                } catch (Exception ex) {
-                    log.warn("Unable to open {}", url, ex);
-                }
+            val iterator = ServiceLoader.load(Tweaker.class, classLoader).iterator();
+            while (iterator.hasNext()) {
+                launcher.registerTweaker(iterator.next());
             }
             log.info("gotoPhase(INITIALIZATION)");
             val workingDir = options.valueOf(gameDirectoryOption);
