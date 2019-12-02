@@ -62,6 +62,7 @@ public final class DefaultModsEnvironment implements ModsEnvironment {
         injector.registerInjector(ModsEnvironment.class, __ -> this);
         injector.registerInjector(EventBus.class, __ -> eventBus);
         injector.registerInjector(Logger.class, LogManager::getLogger);
+        injector.registerInjector(ModContainer.class, this::findContainer);
         return injector;
     }
 }
