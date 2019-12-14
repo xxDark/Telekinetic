@@ -4,9 +4,6 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import ru.xdark.telekinetic.mod.ModContainer;
 import ru.xdark.telekinetic.mod.ModDescription;
-import ru.xdark.telekinetic.resources.Resource;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,16 +34,6 @@ public class SimpleEventBusTest {
             @Override
             public Object getInstance() {
                 return null;
-            }
-
-            @Override
-            public List<Resource> findResources(String path) {
-                return null;
-            }
-
-            @Override
-            public boolean hasResource(String path) {
-                return false;
             }
         }, new TestListener());
         val event = bus.dispatch(new StringEvent(), Runnable::run).join();
