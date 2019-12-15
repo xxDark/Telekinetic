@@ -1,5 +1,6 @@
 package org.spongepowered.telekinetic;
 
+import lombok.Getter;
 import lombok.val;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
@@ -9,6 +10,7 @@ import org.spongepowered.asm.mixin.transformer.TelekineticProxy;
 import org.spongepowered.asm.service.IClassBytecodeProvider;
 import org.spongepowered.asm.service.IClassProvider;
 import org.spongepowered.asm.service.IClassTracker;
+import org.spongepowered.asm.service.IMixinAuditTrail;
 import org.spongepowered.asm.service.ITransformer;
 import org.spongepowered.asm.service.ITransformerProvider;
 import org.spongepowered.asm.service.MixinServiceAbstract;
@@ -28,10 +30,12 @@ import java.util.stream.Collectors;
 public final class MixinServiceTelekinetic extends MixinServiceAbstract implements IClassProvider, IClassBytecodeProvider, ITransformerProvider, IClassTracker {
 
     private final ClassLoadingController controller;
+    @Getter private final IMixinAuditTrail auditTrail;
 
     public MixinServiceTelekinetic() { // I hate ServiceLoader
         // Use RootLauncher as class loading controller
         this.controller = RootLauncher.get();
+        this.auditTrail = new TelekineticAuditTail();
     }
 
     @Override
@@ -42,10 +46,11 @@ public final class MixinServiceTelekinetic extends MixinServiceAbstract implemen
     @Override
     public ClassNode getClassNode(String name, boolean runTransformers) throws IOException {
         val transformedName = name.replace('/', '.');
-        val untransformClassName = this.controller.untransformClassName(transformedName);
-        URL resource = this.controller.findClassResource(transformedName);
+        val controller = this.controller;
+        val untransformClassName = controller.untransformClassName(transformedName);
+        URL resource = controller.findClassResource(transformedName);
         if (resource == null) {
-            resource = this.controller.findClassResource(untransformClassName);
+            resource = controller.findClassResource(untransformClassName);
         }
         if (resource == null) return null;
         byte[] classBytes;
@@ -53,15 +58,15 @@ public final class MixinServiceTelekinetic extends MixinServiceAbstract implemen
             classBytes = IOUtil.toBytes(in);
         }
         if (runTransformers) {
-            val transformation = new ClassTransformation(name, this.controller.transformClassName(name), untransformClassName, classBytes);
-            val newBytes = this.controller.runTransformation(transformation).getClassBytes();
+            val transformation = new ClassTransformation(name, controller.transformClassName(name), untransformClassName, classBytes);
+            val newBytes = controller.runTransformation(transformation).getClassBytes();
             if (newBytes == null) {
                 throw new IllegalStateException("Transformation did not return valid class bytes!");
             }
             classBytes = newBytes;
         }
         val node = new ClassNode();
-        new ClassReader(classBytes).accept(node, ClassReader.EXPAND_FRAMES);
+        new ClassReader(classBytes).accept(node, 0);
         return node;
     }
 
@@ -158,6 +163,7 @@ public final class MixinServiceTelekinetic extends MixinServiceAbstract implemen
 
     @Override
     public void registerInvalidClass(String className) {
+        // Do nothing
     }
 
     @Override

@@ -15,8 +15,7 @@ public final class TelekineticProxy implements ClassFileTransformer {
         if (!active) return;
         val bytes = transformation.getClassBytes();
         if (bytes != null) {
-            val newBytes = TRANSFORMER.transformClassBytes(transformation.getOriginalClassName(), transformation.getTransformedClassName(), bytes);
-            transformation.setTransformationResult(newBytes);
+            transformation.setTransformationResult(TRANSFORMER.transformClassBytes(transformation.getOriginalClassName(), transformation.getTransformedClassName(), bytes));
         }
     }
 

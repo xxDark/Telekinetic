@@ -2,6 +2,8 @@ dependencies {
     compileOnly spongemixin
     compileOnly log4j_api
     compileOnly log4j_core
+    compileOnly asm
+    compileOnly asm_tree
     compileOnly project(':api')
     compileOnly project(':launcher')
 }

@@ -21,7 +21,6 @@ import java.util.function.Predicate;
 
 @Log4j2
 public final class LauncherClassLoader extends URLClassLoader implements ClasspathAppender {
-    private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[1024]);
     private final ClassLoadingController controller;
     private final ClassLoader parent;
 
@@ -99,7 +98,7 @@ public final class LauncherClassLoader extends URLClassLoader implements Classpa
                     definePackage(packageName, null, null, null, null, null, null, null);
                 }
             }
-            val buffer = BUFFER.get();
+            val buffer = new byte[1024];
             byte[] classBytes;
             try (val in = connection.getInputStream()) {
                 val baos = new ByteArrayOutputStream(256);
